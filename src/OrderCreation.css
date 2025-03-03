@@ -1,0 +1,101 @@
+/* General Styling */
+.home-container {
+    width: 90%;
+    margin: auto;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Table Styling */
+  .table-container {
+    margin-top: 20px;
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #c20e35;
+    color: white;
+  }
+  
+  /* Input Fields */
+  input[type="text"], input[type="number"], input[type="date"] {
+    width: 90%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .done-btn {
+    background-color: #17b822;
+    color: white;
+  }
+  
+  .navigate-btn {
+    background-color: #ff9800;
+    color: white;
+    display: block;
+    width: 200px;
+    text-align: center;
+    margin: 20px auto;
+  }
+  
+  /* Add these styles to your OrderCreation.css file */
+
+.active-row {
+  background-color: #f0f8ff; /* Light blue background for active row */
+}
+
+.select-btn {
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+}
+
+.active-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: 1px solid #45a049;
+}
+
+.active-style-container {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.active-style-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.active-style-info h3 {
+  margin: 0 20px 0 0;
+  color: #333;
+}
+
+.active-style-info p {
+  margin: 0 20px 0 0;
+  padding: 5px 0;
+}

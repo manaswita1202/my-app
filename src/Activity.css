@@ -1,0 +1,99 @@
+.activity-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .input-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .input-container label {
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .input-container input,
+  .input-container select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  table th,
+  table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  table th {
+    background: #c20e35;
+    color: white;
+    font-weight: bold;
+  }
+  
+  table tr:nth-child(even) {
+    background: #f9f9f9;
+  }
+  
+  table input {
+    width: 90%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  button {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background: #c20e35;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  button:hover {
+    background: #c20e35;
+  }
+  
+  .add-row-btn {
+    text-align: center;
+    width: 10%;
+    color: #fff
+  }
+  
+  .add-row-btn button {
+    background-color: #c82333;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .add-row-btn button:hover {
+    background-color: #a71d2a;
+  }
+  
+  

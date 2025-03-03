@@ -1,0 +1,97 @@
+.bom-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+
+  .bom-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .bom-header {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+  }
+  
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .header-input {
+    width: 22%;
+    padding: 8px;
+    border: 1px solid #c20e35;
+    border-radius: 4px;
+    margin: 5px;
+  }
+  
+  button {
+    background-color: #c20e35;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin: 10px 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  button:hover {
+    background-color: #b3006e;
+  }
+  
+  .ant-table {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+  }
+  
+  .ant-table-thead > tr > th {
+    background-color: #f0f0f0 !important;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .ant-table-tbody > tr > td {
+    text-align: center;
+    padding: 8px;
+  }
+  
+  .ant-input,
+  .ant-select {
+    width: 100%;
+  }
+  
+  .add-rowtrim-btn {
+    background-color: #c20e35;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 15px;
+  }
+  
+  .save-pdf-btn {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    background-color: #c20e35;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  

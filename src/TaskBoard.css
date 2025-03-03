@@ -1,0 +1,182 @@
+.task-board {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+    background-color: #f4f4f4;
+  }
+  
+  .task-section {
+    position: relative; /* Ensure relative positioning for absolute children */
+    width: 30%;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    min-height: 120px; /* Ensures proper height */
+  }
+  
+  .section-title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .task-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .task-title {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: left;
+  }
+  
+  .task-info {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .task-steps {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+  }
+  
+  .task-step {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+  }
+  
+  .progress-bar {
+    height: 10px;
+    background: #ddd;
+    border-radius: 5px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+  
+  .progress {
+    height: 100%;
+    background: #4caf50;
+  }
+  
+  .progress-text {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    margin-top: 5px;
+  }
+  
+  .add-task-button {
+    display: block;
+    font-size: 14px;
+    width: 100%;
+    padding: 10px;
+    background: #c20e35;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .add-task-button:hover {
+    background: #c20e35;
+  }
+
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 300px;
+  }
+  
+  .modal-content h3 {
+    margin-bottom: 15px;
+  }
+  
+  .modal-content label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
+  .modal-content input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .modal-buttons {
+    margin-top: 15px;
+  }
+  
+  .modal-buttons button {
+    padding: 8px 12px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .modal-buttons button:first-child {
+    background: rgb(4, 179, 4);
+    color: white;
+  }
+  
+  .modal-buttons .cancel-button {
+    background: red;
+    color: white;
+  }
+
+  .task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .delete-task-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    align-items: right;
+  }
+  
+  .delete-icon {
+      width: 20px;
+      height: 20px;
+      opacity: 0.7;
+      transition: opacity 0.2s ease-in-out;
+      align-items: right;
+  }
+  
+  .delete-task-button:hover .delete-icon {
+    opacity: 0.7;
+  }
+  

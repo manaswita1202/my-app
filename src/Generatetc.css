@@ -1,0 +1,223 @@
+.techpack1-container {
+    width: 100%;
+    padding: 10px;
+    background: white;
+    font-family: Arial, sans-serif;
+  }
+
+  .techpack1-page {
+    page-break-after: always;
+  }
+  
+  .techpack1-table, .product-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    table-layout: fixed;
+  }
+  
+  .techpack1-table th,
+  .techpack1-table td {
+    border: 1px solid rgb(225, 216, 216);
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .techpack1-table th.title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .brand-logo {
+    float: left;
+    font-weight: bold;
+  }
+  
+  .techpack1-table input,
+  .techpack1-table select {
+    width: 100%;
+    padding: 5px;
+    font-size: 14px;
+  }
+  
+  .flat-sketch-section {
+    text-align: center;
+  }
+  
+  .flat-sketch-section input {
+    margin: 10px 0;
+  }
+  
+  .flat-sketch-preview {
+    max-width: 600px;
+    max-height: 400px;
+    border: 1px solid black;
+    margin-top: 10px;
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .add-btn, .remove-btn {
+    padding: 5px 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    background-color: #c20e35;
+  }
+  
+  .remove-btn {
+    background-color: red;
+    color: white;
+    border: none;
+  }
+
+  .add-row-btn {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #c20e35;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .trims-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .trims-table th, .trims-table td {
+    border: 1px solid rgb(225, 216, 216);
+    padding: 8px;
+    text-align: left;
+  }
+
+  .section {
+    margin-bottom: 30px;
+  }
+
+  .section h2 {
+    font-size: 18px;
+    font-weight: bold;
+    color: black;
+    position: relative;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  
+  .section h2::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: red;
+    margin-top: 5px;
+  }  
+  
+  .sample-img {
+    width: 100px;
+    height: auto;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+  }
+
+  .construction-page {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .add-page-btn,
+  .delete-page-btn {
+    background-color: #c20e35;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 5px;
+  }
+  
+  .delete-page-btn {
+    background-color: red;
+  }
+  
+  .construction-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .construction-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .image-upload {
+    width: 80%;
+    margin-bottom: 10px;
+  }
+  
+  .comment-box {
+    width: 90%;
+    height: 80px;
+    resize: none;
+    padding: 5px;
+  }
+
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adds space between the logo and "Techpack" text */
+  }
+  
+  .logo-img {
+    width: 90px;  /* Adjust width as needed */
+    height: auto;  /* Maintains aspect ratio */
+    object-fit: contain;
+  }
+  
+
+  /* Export Button Styling */
+.export-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.export-btn {
+  background-color: #c20e35;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+
+  
+  /* Ensuring A4 Landscape Format */
+  @media print {
+    @page {
+      size: A4 landscape;
+      margin: 20mm;
+    }
+    .techpack1-container {
+      width: 100%;
+      page-break-after: always;
+    }
+  }
+  

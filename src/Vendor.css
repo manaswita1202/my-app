@@ -1,0 +1,105 @@
+.vendor-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+  
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+  
+.vendor-section {
+    margin-bottom: 30px;
+}
+  
+h3 {
+    margin-bottom: 15px;
+}
+  
+.vendor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+  
+.vendor-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+  
+.vendor-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+  
+.vendor-logo {
+    width: 80px;
+    height: auto;
+    border-radius: 5px;
+}
+  
+.vendor-contact p {
+    margin: 5px 0;
+}
+  
+/* Add More Button */
+.add-more-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #c20e35;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.add-more-btn:hover {
+    background-color: #a00e2c;
+}
+
+/* Add these styles to your existing Vendor.css file */
+
+.vendor-buttons {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .vendor-email-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .lab-dip-btn {
+    background-color: #3498db;
+    color: white;
+  }
+  
+  .lab-dip-btn:hover {
+    background-color: #2980b9;
+  }
+  
+  .bulk-fabric-btn {
+    background-color: #2ecc71;
+    color: white;
+  }
+  
+  .bulk-fabric-btn:hover {
+    background-color: #27ae60;
+  }

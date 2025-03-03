@@ -1,0 +1,248 @@
+/* SampleTracker.css */
+.sample-tracker {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .add-button {
+    background-color: #c20e35;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .style-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .style-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .style-info h2 {
+    margin: 0;
+    font-size: 1.2em; /* Decreased font size */
+    font-weight: normal; /* Removes bold */
+    color: #c20e35; /* Change text color (adjust as needed) */
+    text-align: left; /* Align text to the left */
+  }
+  .style-dates {
+    text-align: right;
+  }
+  
+  .style-dates p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #666;
+  }
+  
+  .status-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+  }
+  
+  .status-button.progress {
+    background-color: #f10f26;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    height: 25%;
+    cursor: pointer;
+  }
+  
+  .status-button.completed {
+    background-color: #28a745;
+  }
+  
+  .delete-button {
+    background-color: #f10f26;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .sample-timeline {
+    position: relative;
+    padding: 20px 0;
+    margin-top: 40px;
+  }
+
+  .timeline-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #e0e0e0; /* Light gray for incomplete line */
+    transform: translateY(-50%);
+  }
+
+  .timeline-progress {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 2px;
+    background-color: #c20e35; /* Blue for completed line */
+    transform: translateY(-50%);
+    transition: width 0.3s ease;
+  }
+  
+  .timeline-points {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  padding: 0 10px; /* Add padding to align with progress line */
+ }
+  
+.sample-point {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+    flex: 1;
+    position: relative;
+  }
+  
+  .checkpoint {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #c20e35;
+    background: white;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    z-index: 2;
+    transition: background-color 0.3s ease;
+  }
+  
+  .checkpoint.completed {
+    background: #c20e35;
+  }
+  
+  .sample-label {
+    margin-top: 10px;
+    font-size: 0.9em;
+    text-align: center;
+  }
+  
+  .sample-days {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 5px;
+  }
+  
+  .dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .dialog {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+  }
+  
+  .dialog h2 {
+    margin-top: 0;
+  }
+  
+  .dialog input,
+  .dialog select {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .dialog-buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .dialog-buttons button:first-child {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .dialog-buttons button:last-child {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .delete-sample-button {
+    background: transparent;
+    border: none;
+    color: red;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+  
+  .delete-sample-button:hover {
+    color: darkred;
+  }
+  .add-sample {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .add-sample input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 60%;
+  }
+  
+  .add-sample-button {
+    background-color: rgb(181, 15, 15);
+    color: white;
+    border: none;
+    padding: 5px 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    height: 30px;
+    margin-top: 5px;
+  }
+  
+  .add-sample-button:hover {
+    background-color: darkgreen;
+  }
+    

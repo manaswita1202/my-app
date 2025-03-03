@@ -1,0 +1,64 @@
+.sidebar {
+    background-color: #fff;
+  }
+  
+  .sidebar-title {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 24px;
+  }
+  
+  .sidebar-button {
+    width: 100%;
+    text-align: left;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    transition: all 0.3s ease;
+  }
+  
+  .sidebar-button:hover {
+    background-color: #f5f5f5;
+    color: #c20e35;
+  }
+  
+  .sidebar-button.active {
+    background-color: #f5f5f5;
+    color: #c20e35;
+    font-weight: bold;
+  }
+
+  .navbar {
+    position: fixed;
+    height: 100vh;
+    background-color: #fff;
+    border-right: 1px solid #ccc;
+  }
+  
+  .navbar a {
+    display: block;
+    text-decoration: none;
+    color: black;
+    padding: 10px;
+  }
+  
+  .navbar a:hover {
+    background-color: #f0f0f0;
+  }
+
+  .sidebar-logo {
+    max-width: 80%; /* Adjust width relative to the sidebar */
+    max-height: 130px; /* Adjust as needed */
+    object-fit: contain; /* Ensures it fits properly */
+    display: block;
+    margin: auto;
+  }
+  
+
+  
+  
+  

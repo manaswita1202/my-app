@@ -1,0 +1,245 @@
+/* Container */
+.fabric-trims-container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    text-decoration: none !important;
+    color: inherit !important;
+    border: none !important;
+    outline: none !important;
+}
+
+/* Section Title */
+h2 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Layout */
+.fabric-trims-section {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Fabric and Trim Sections */
+.trim-section {
+    width: 100%;
+    text-align: center;
+}
+
+/* Section Headings */
+h3 {
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+/* Trims Grid */
+.trims-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Trim Cards */
+.trim-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.trim-card:hover {
+    background-color: #f0f0f0;
+}
+
+/* Images */
+.trim-card img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+/* Trim Names */
+.trim-card p {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Add More Button */
+.add-more-btn {
+    display: block;
+    background-color: #c20e35;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    margin: 20px auto;
+}
+
+.add-more-btn:hover {
+    background-color: #a00e2c;
+}
+
+/* Back Button */
+.back-button {
+    background-color: #c20e35;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    text-align: center;
+    display: inline-block;
+    font-size: 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.back-button:hover {
+    background-color: #a00e2c;
+}
+
+/* 🔹 Delete Button for Categories */
+.delete-icon, .delete-btn {
+    width: 55px;
+    height: 35px;
+    cursor: pointer;
+    margin-left: 5px;
+    text-align: center;
+}
+
+
+/* Container 
+.fabric-trims-container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    text-decoration: none !important;
+    color: inherit !important;
+    border: none !important;
+    outline: none !important;
+}
+
+/* Section Title 
+h2 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Layout 
+.fabric-trims-section {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* Fabric and Trim Sections 
+.fabric-section, .trim-section {
+    width: 48%;
+    text-decoration: none !important;
+    color: inherit !important;
+    border: none !important;
+    outline: none !important;
+}
+
+/* Section Headings 
+h3 {
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 15px;
+    
+}
+
+/* Fabric & Trim Cards 
+.fabric-card, .trim-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.fabric-card:hover, .trim-card:hover {
+    background-color: #f0f0f0;
+    text-decoration: none !important; /* Force removal 
+    color: inherit !important;
+}
+
+/* Images 
+.fabric-card img, .trim-card img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 15px;
+}
+
+/* Fabric & Trim Names 
+.fabric-card p, .trim-card p {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Add More Button 
+.add-more-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #c20e35;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.add-more-btn:hover {
+    background-color: #a00e2c;
+}
+/* Back Button 
+.back-button {
+    background-color: #c20e35;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.back-button:hover {
+    background-color: #a00e2c;
+}*/

@@ -1,0 +1,110 @@
+.detail-container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+}
+
+h2 {
+    text-align: left;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.detail-card {
+    display: flex;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.detail-card img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 15px;
+}
+
+.detail-info p {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #333;
+}
+/* Add More Button */
+.add-more-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #c20e35;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.add-more-btn:hover {
+    background-color: #a00e2c;
+}
+
+
+.add-btn {
+    margin-bottom: 20px;
+    padding: 10px;
+    background: green;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+  }
+  
+  .modal-content input {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .save-btn {
+    padding: 10px;
+    background: blue;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  
+  .cancel-btn {
+    padding: 10px;
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+
+  
