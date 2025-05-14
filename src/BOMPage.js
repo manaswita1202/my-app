@@ -22,11 +22,7 @@ const BOMPage = () =>{
       color: "",
       size: "",
       uom: "",
-      consumption: 0,
       quantity: 0,
-      rate: 0,
-      amount: 0,
-      currency: "USD",
       supplier: ""
    } 
   ]);  
@@ -40,10 +36,6 @@ const BOMPage = () =>{
       size: "",
       uom: "",
       consumption: 0,
-      quantity: 0,
-      rate: 0,
-      amount: 0,
-      currency: "USD",
       supplier: ""
     }]);
 
@@ -91,10 +83,6 @@ useEffect(() => {
         size: fabric.size, // Default value
         uom: "", // Default value
         consumption: 0, // Default value
-        quantity: fabric.quantity, // Default value
-        rate: 0, // Default value
-        amount: 0, // Default value
-        currency: "USD", // Default value
         supplier: "", // Default value
       }));
 
@@ -111,11 +99,7 @@ useEffect(() => {
         color: trim.color, // Default value
         size: trim.size, // Default value
         uom: "", // Default value
-        consumption: 0, // Default value
         quantity: trim.quantity, // Default value
-        rate: 0, // Default value
-        amount: 0, // Default value
-        currency: "USD", // Default value
         supplier: "", // Default value
       }));
       console.log(updatedTrimsData)
@@ -131,31 +115,17 @@ useEffect(() => {
 
   const handleTableChange = (key, field, value, type) => {
     if (type === "fabric") {
-      const newData = fabricData.map((row) => {
-        if (row.key === key) {
-          const updatedRow = { ...row, [field]: value };
-          if (field === "consumption" || field === "rate") {
-            updatedRow.amount = updatedRow.consumption * updatedRow.rate;
-          }
-          return updatedRow;
-        }
-        return row;
-      });
+      const newData = fabricData.map((row) => 
+        row.key === key ? { ...row, [field]: value } : row
+      );
       setFabricData(newData);
     } else {
-      const newData = trimsData.map((row) => {
-        if (row.key === key) {
-          const updatedRow = { ...row, [field]: value };
-          if (field === "consumption" || field === "rate") {
-            updatedRow.amount = updatedRow.quantity * updatedRow.rate;
-          }
-          return updatedRow;
-        }
-        return row;
-      });
+      const newData = trimsData.map((row) => 
+        row.key === key ? { ...row, [field]: value } : row
+      );
       setTrimsData(newData);
     }
-  };
+  };  
   
   const addRow = () => {
     setFabricData([
@@ -169,10 +139,6 @@ useEffect(() => {
         size: "",
         uom: "",
         consumption: 0,
-        quantity: 0,
-        rate: 0,
-        amount: 0,
-        currency: "USD",
         supplier: "",
       },
     ]);
@@ -188,11 +154,7 @@ useEffect(() => {
         color: "",
         size: "",
         uom: "",
-        consumption: 0,
         quantity: 0,
-        rate: 0,
-        amount: 0,
-        currency: "USD",
         supplier: "",
       },
     ]);
@@ -219,7 +181,7 @@ useEffect(() => {
     // Fabric Table
     doc.autoTable({
       startY: 90,
-      head: [["S. No.", "Code", "Body Type", "Description", "Color", "Size", "UOM", "Consumption", "Quantity", "Rate", "Amount", "Currency", "Supplier"]],
+      head: [["S. No.", "Code", "Body Type", "Description", "Color", "Size", "UOM", "Consumption", "Supplier"]],
       body: fabricData.map((row, index) => [
         index + 1,
         row.styleNo,
@@ -229,10 +191,6 @@ useEffect(() => {
         row.size,
         row.uom,
         row.consumption,
-        row.quantity,
-        row.rate,
-        row.amount.toFixed(2),
-        row.currency,
         row.supplier,
       ]),
     });
@@ -240,7 +198,7 @@ useEffect(() => {
     // Trims Table
     doc.autoTable({
       startY: doc.autoTable.previous.finalY + 10,
-      head: [["S. No.", "Style No.", "Trims", "Trim Description", "Color", "Size", "UOM", "Consumption", "Quantity", "Rate", "Amount", "Currency", "Supplier"]],
+      head: [["S. No.", "Style No.", "Trims", "Trim Description", "Color", "Size", "UOM","Quantity", "Supplier"]],
       body: trimsData.map((row, index) => [
         index + 1,
         row.styleNo,
@@ -249,11 +207,7 @@ useEffect(() => {
         row.color,
         row.size,
         row.uom,
-        row.consumption,
         row.quantity,
-        row.rate,
-        row.amount.toFixed(2),
-        row.currency,
         row.supplier,
       ]),
     });
@@ -364,58 +318,6 @@ useEffect(() => {
       ),
     },
     {
-      title: "Quantity",
-      dataIndex: "quantity",
-      key: "quantity",
-      render: (text, record) => (
-        <Input
-          type="number"
-          value={text}
-          onChange={(e) =>
-            handleTableChange(record.key, "quantity", Number(e.target.value), "fabric")
-          }
-        />
-      ),
-    },
-    {
-      title: "Rate",
-      dataIndex: "rate",
-      key: "rate",
-      render: (text, record) => (
-        <Input
-          type="number"
-          value={text}
-          onChange={(e) =>
-            handleTableChange(record.key, "rate", Number(e.target.value), "fabric")
-          }
-        />
-      ),
-    },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-      render: (text) => <span>{text.toFixed(2)}</span>,
-    },
-    {
-      title: "Currency",
-      dataIndex: "currency",
-      key: "currency",
-      render: (text, record) => (
-        <Select
-          value={text}
-          onChange={(value) =>
-            handleTableChange(record.key, "currency", value, "fabric")
-          }
-          style={{ width: "100%" }}
-        >
-          <Option value="USD">USD</Option>
-          <Option value="INR">INR</Option>
-          <Option value="EUR">EUR</Option>
-        </Select>
-      ),
-    },
-    {
       title: "Supplier",
       dataIndex: "supplier",
       key: "supplier",
@@ -514,20 +416,6 @@ useEffect(() => {
       ),
     },
     {
-      title: "Consumption",
-      dataIndex: "consumption",
-      key: "consumption",
-      render: (text, record) => (
-        <Input
-          type="number"
-          value={text}
-          onChange={(e) =>
-            handleTableChange(record.key, "consumption", Number(e.target.value), "trim")
-          }
-        />
-      ),
-    },
-    {
       title: "Quantity",
       dataIndex: "quantity",
       key: "quantity",
@@ -539,44 +427,6 @@ useEffect(() => {
             handleTableChange(record.key, "quantity", Number(e.target.value), "trim")
           }
         />
-      ),
-    },
-    {
-      title: "Rate",
-      dataIndex: "rate",
-      key: "rate",
-      render: (text, record) => (
-        <Input
-          type="number"
-          value={text}
-          onChange={(e) =>
-            handleTableChange(record.key, "rate", Number(e.target.value), "trim")
-          }
-        />
-      ),
-    },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-      render: (text) => <span>{text.toFixed(2)}</span>,
-    },
-    {
-      title: "Currency",
-      dataIndex: "currency",
-      key: "currency",
-      render: (text, record) => (
-        <Select
-          value={text}
-          onChange={(value) =>
-            handleTableChange(record.key, "currency", value, "trim")
-          }
-          style={{ width: "100%" }}
-        >
-          <Option value="USD">USD</Option>
-          <Option value="INR">INR</Option>
-          <Option value="EUR">EUR</Option>
-        </Select>
       ),
     },
     {

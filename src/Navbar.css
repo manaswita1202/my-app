@@ -1,5 +1,6 @@
 .sidebar {
     background-color: #fff;
+    overflow: scroll;
   }
   
   .sidebar-title {
@@ -58,7 +59,117 @@
     margin: auto;
   }
   
+/* Add these styles to your existing Navbar.css */
 
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  height: 100vh;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 60px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.collapse-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 5px;
+  margin-right: 10px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color:#c20e35 ;
+}
+
+.collapse-button:hover {
+  background-color: #f0f0f0;
+}
+
+.sidebar-logo {
+  max-width: 80%;
+  height: auto;
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar-button {
+  width: 100%;
+  text-align: left;
+  padding: 10px 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar.collapsed .sidebar-button {
+  text-align: center;
+  padding: 10px 0;
+}
+
+/* Handle dropdown behavior in collapsed state */
+.sidebar.collapsed .dropdown-content {
+  display: none;
+}
+
+/* Add these styles to your existing Navbar.css */
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;  /* Push to bottom if you want it at the end */
+  color: #ff3b30;     /* Red color for power button */
+}
+
+.sidebar.collapsed .logout-button {
+  justify-content: center;
+}
+
+.logout-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.logout-text {
+  margin-left: 8px;
+}
+
+/* If you want to visually separate the logout button */
+.logout-button {
+  border-top: 1px solid #eee;
+  margin-top: 10px;
+  padding-top: 15px;
+}
+
+/* Hover effect for logout button */
+.logout-button:hover {
+  background-color: rgba(255, 59, 48, 0.1); /* Light red background on hover */
+}
+
+.logout-icon {
+  width: 40px; /* Adjust size */
+  height: 40px;
+}
   
   
   

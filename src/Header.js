@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Bell, ChevronDown, LogOut, User, X } from "lucide-react";
 import "./Header.css";
-import arvindLogo from "./assets/arvind.png";
+import samplifylogo from "./assets/samplifylogo.png";
 
 const Header = () => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -74,7 +74,7 @@ const Header = () => {
 
   return (
     <header className="header">
-      <img src={arvindLogo} alt="Arvind Logo" className="arvind-logo" />
+      <img src={samplifylogo} alt="Samplify Logo" className="arvind-logo" />
 
       <div className="header-right">
         <div className="notification-container" ref={notificationDropdownRef}>

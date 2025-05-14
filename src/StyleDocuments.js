@@ -28,7 +28,7 @@ const ViewFiles = () => {
               <td>{file.buyerName}</td>
               <td>{file.garment}</td>
               <td>{file.fileType}</td>
-              <td><a href={file.filePath} target="_blank" rel="noopener noreferrer">View</a></td>
+              <td><a href={`http://localhost:5000` + file.filePath} target="_blank" rel="noopener noreferrer">View</a></td>
             </tr>
           ))}
         </tbody>

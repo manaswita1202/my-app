@@ -3,6 +3,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import hugoBossLogo1 from "./assets/hugobosslogo.png";
 import "./Generatetc.css";
+import ImageEditor from "./ImageAnnotation";
 
 const Generatetc = () => {
   const [styleNo, setStyleNo] = useState("");
@@ -16,7 +17,13 @@ const Generatetc = () => {
   const [image, setImage] = useState(null);
   const [imageFlatSketch, setImageFlatSketch] = useState(null);
 
-  const pdfRef = useRef(null); // Make sure ref is initialized properly
+  // Create refs for each section to be captured
+  const headerRef = useRef(null);
+  const flatSketchRef = useRef(null);
+  const productDescRef = useRef(null);
+  const pomRef = useRef(null);
+  const trimsRef = useRef(null);
+  const constructionRefs = useRef([]);
 
   const [productRows, setProductRows] = useState([
     { article: "", articleCode: "", description: "", color: "", consumption: "", placement: "" },
@@ -72,7 +79,6 @@ const Generatetc = () => {
     updatedRows[index][field] = value;
     setPomRows(updatedRows);
   };
-
 
   const addPomRow = () => {
     setPomRows([...pomRows, { pom: "", S: "", M: "", L: "", XL: "", XXL: "", tolerance: "± 0.25" }]);
@@ -135,57 +141,170 @@ const Generatetc = () => {
     }
   };
 
-  // Export all pages as PDF - FIXED FUNCTION
-  const exportToPDF = () => {
-    if (!pdfRef.current) {
-      console.error("PDF reference is not attached to any element");
-      return;
-    }
-
-    const input = pdfRef.current;
+  // Function to capture header as an image
+  const captureHeader = async () => {
+    if (!headerRef.current) return null;
     
-    // Use a promise chain for better error handling
-    html2canvas(input, { 
+    const canvas = await html2canvas(headerRef.current, { 
       scale: 2,
-      logging: true, // For debugging
-      useCORS: true, // For images with CORS issues
-      allowTaint: true // For tainted images
-    })
-    .then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      useCORS: true,
+      allowTaint: true,
+      logging: false
+    });
+    
+    return canvas.toDataURL('image/png');
+  };
+
+  // Function to capture a section as an image
+  const captureSection = async (ref) => {
+    if (!ref) return null;
+    
+    const canvas = await html2canvas(ref, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      logging: false
+    });
+    
+    return canvas.toDataURL('image/png');
+  };
+
+  // Enhanced PDF export function
+  const exportToPDF = async () => {
+    try {
+      // Show loading indication
+      alert("Generating PDF, please wait...");
       
-      let heightLeft = imgHeight;
-      let position = 0;
+      // Capture the header first
+      const headerImage = await captureHeader();
       
-      // First page
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+      // Create new PDF - landscape mode (landscape, mm, A4)
+      const pdf = new jsPDF('l', 'mm', 'a4');
       
-      // Add more pages if needed
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
+      // A4 dimensions in landscape mode
+      const pageWidth = 297;
+      const pageHeight = 210;
+      
+      // Header dimensions
+      const headerHeight = 40; // Adjust based on your header height
+      
+      // Margins
+      const margin = 10;
+      const contentWidth = pageWidth - (2 * margin);
+      const contentHeight = pageHeight - headerHeight - (2 * margin);
+
+      // Function to add header to the current page
+      const addHeaderToPage = () => {
+        if (headerImage) {
+          pdf.addImage(headerImage, 'PNG', margin, margin, contentWidth, headerHeight);
+        }
+      };
+
+      // Function to add a new page with header
+      const addNewPage = () => {
         pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
+        addHeaderToPage();
+      };
+
+      // Add header to the first page
+      addHeaderToPage();
       
+      // Capture and add each section
+      
+      // 1. Flat Sketch Section
+      if (flatSketchRef.current) {
+        const flatSketchImage = await captureSection(flatSketchRef.current);
+        if (flatSketchImage) {
+          pdf.addImage(
+            flatSketchImage, 
+            'PNG', 
+            margin, 
+            margin + headerHeight + 5, 
+            contentWidth, 
+            contentHeight - 10
+          );
+        }
+      }
+
+      // 2. Product Description Section
+      addNewPage();
+      if (productDescRef.current) {
+        const productDescImage = await captureSection(productDescRef.current);
+        if (productDescImage) {
+          pdf.addImage(
+            productDescImage, 
+            'PNG', 
+            margin, 
+            margin + headerHeight + 5, 
+            contentWidth, 
+            contentHeight - 10
+          );
+        }
+      }
+
+      // 3. POM Section
+      addNewPage();
+      if (pomRef.current) {
+        const pomImage = await captureSection(pomRef.current);
+        if (pomImage) {
+          pdf.addImage(
+            pomImage, 
+            'PNG', 
+            margin, 
+            margin + headerHeight + 5, 
+            contentWidth, 
+            contentHeight - 10
+          );
+        }
+      }
+
+      // 4. Trims Section
+      addNewPage();
+      if (trimsRef.current) {
+        const trimsImage = await captureSection(trimsRef.current);
+        if (trimsImage) {
+          pdf.addImage(
+            trimsImage, 
+            'PNG', 
+            margin, 
+            margin + headerHeight + 5, 
+            contentWidth, 
+            contentHeight - 10
+          );
+        }
+      }
+
+      // 5. Construction Pages
+      for (let i = 0; i < constructionPages.length; i++) {
+        if (constructionRefs.current[i]) {
+          addNewPage();
+          const constructionImage = await captureSection(constructionRefs.current[i]);
+          if (constructionImage) {
+            pdf.addImage(
+              constructionImage, 
+              'PNG', 
+              margin, 
+              margin + headerHeight + 5, 
+              contentWidth, 
+              contentHeight - 10
+            );
+          }
+        }
+      }
+
+      // Save the PDF
       pdf.save("TechPack.pdf");
-    })
-    .catch(error => {
+      
+    } catch (error) {
       console.error("Error generating PDF:", error);
       alert("Error generating PDF. Check console for details.");
-    });
+    }
   };
 
   return (
-    // Attach the ref to the top-level container
-    <div className="techpack1-container" ref={pdfRef}>
-      {/* Page 1 - Header + Flat Sketch Section */}
-      <div className="techpack1-page">
+    <div className="techpack1-container">
+      {/* Header Template - This will be used as a reference for each page */}
+      <div className="techpack1-header" ref={headerRef}>
         <table className="techpack1-table">
           <thead>
             <tr>
@@ -230,7 +349,10 @@ const Generatetc = () => {
             </tr>
           </tbody>
         </table>
+      </div>
 
+      {/* Page 1 - Flat Sketch Section */}
+      <div className="techpack1-page" ref={flatSketchRef}>
         <div className="flat-sketch-section">
           <h3>Flat Sketch</h3>
           <div className="border p-4 flex flex-col items-center">
@@ -241,7 +363,7 @@ const Generatetc = () => {
       </div>
 
       {/* Page 2 - Product Description Section */}
-      <div className="techpack1-page">
+      <div className="techpack1-page" ref={productDescRef}>
         <h3 className="section-title">Product Description</h3>
         <table className="product-table">
           <thead>
@@ -275,7 +397,7 @@ const Generatetc = () => {
       </div>
 
       {/* POM section */}
-      <div className="techpack1-page">
+      <div className="techpack1-page" ref={pomRef}>
         <h3 className="section-title">Points of Measurement</h3>
         <div className="pom-container">
           {/* Image Upload */}
@@ -329,7 +451,7 @@ const Generatetc = () => {
       </div>
 
       {/* PAGE 4: TRIMS CARD */}
-      <div className="techpack1-page">
+      <div className="techpack1-page" ref={trimsRef}>
         <h3 className="section-title">Trims Card</h3>
         <table className="trims-table">
           <thead>
@@ -436,7 +558,11 @@ const Generatetc = () => {
 
       {/* Construction Details Pages */}
       {constructionPages.map((page, index) => (
-        <div key={index} className="construction-page techpack1-page">
+        <div 
+          key={index} 
+          className="construction-page techpack1-page"
+          ref={el => constructionRefs.current[index] = el}
+        >
           <div className="page-header">
             <h2>Construction Details - Page {index + 1}</h2>
             <div className="page-actions">
@@ -448,10 +574,9 @@ const Generatetc = () => {
           </div>
 
           <div className="construction-section">
-            {[1, 2, 3, 4].map((section) => (
+            {[1].map((section) => (
               <div key={section} className="construction-box">
-                <input type="file" accept="image/*" className="image-upload" />
-                <textarea className="comment-box" placeholder="Add comments..."></textarea>
+                <ImageEditor />
               </div>
             ))}
           </div>

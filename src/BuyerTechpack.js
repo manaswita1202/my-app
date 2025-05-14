@@ -48,7 +48,7 @@ const BuyerPage = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/upload_files", formData, {
+      const response = await axios.post("http://localhost:5000/upload_files_new", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       triggerNotification("New style has been added - After order creation page")

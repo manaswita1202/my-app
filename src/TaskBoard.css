@@ -179,4 +179,77 @@
   .delete-task-button:hover .delete-icon {
     opacity: 0.7;
   }
-  
+  /* Add to your existing TaskBoard.css file */
+
+.task-step-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+  border-left: 3px solid #e0e0e0;
+  padding-left: 8px;
+}
+
+.activity-timing {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  color: #666;
+  margin-left: 25px;
+  margin-top: 4px;
+}
+
+.activity-timing small {
+  margin-bottom: 2px;
+}
+
+.activity-timing .delay {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.task-step {
+  display: flex;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.task-step input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.task-step span {
+  text-transform: capitalize;
+}
+
+.task-steps {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  margin-top: 15px;
+}
+
+.Problem-comment {
+  margin-top: 10px;
+  width: 100%;
+  min-height: 80px;
+  resize: vertical;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.done-button {
+  margin-top: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.done-button:hover {
+  background-color: #388e3c;
+}

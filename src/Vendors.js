@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./Vendor.css";
 import arvindLogo from "./assets/arvind.png";
+import averylogo from "./assets/averylogo.jpg";
 import gmsLogo from "./assets/gms.png";
 import sriAmmanLogo from "./assets/sat.png";
 import manoharLogo from "./assets/mfilaments.png";
@@ -15,8 +16,9 @@ const VendorPage = () => {
 
   const [trimVendors, setTrimVendors] = useState([
     { logo: sriAmmanLogo, name: "Sri Amman Tapes", location: "Tirupur", vendorNumber: "11223", contactPerson: "Mike Johnson", phone: "9876543212", email: "mike@sriamman.com" },
-    { logo: manoharLogo, name: "Manohar Filaments", location: "Bengaluru", vendorNumber: "44556", contactPerson: "Emma Davis", phone: "9876543213", email: "emma@manohar.com" },
-    { logo: nkPackLogo, name: "NK Pack", location: "Mumbai", vendorNumber: "77889", contactPerson: "Liam Wilson", phone: "9876543214", email: "liam@nkpack.com" }
+    { logo: manoharLogo, name: "Manohar Filaments", location: "Bengaluru", vendorNumber: "44556", contactPerson: "Ritu Dingra", phone: "9900032280", email: "ritudingra@manoharfilaments.com" },
+    { logo: nkPackLogo, name: "NK Pack", location: "Mumbai", vendorNumber: "77889", contactPerson: "Liam Wilson", phone: "9876543214", email: "liam@nkpack.com" },
+    { logo: averylogo, name: "Avery Dennison", location: "Bengaluru", vendorNumber: "89877", contactPerson: "Rishi Kapoor Sachin", phone: "9958587368", email: "rishikapoor@averydennsion.com" }
   ]);
 
   const addMoreVendor = (type) => {

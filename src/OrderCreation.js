@@ -40,8 +40,26 @@ const HomePage = ({ onAddTask }) => {
   };
 
   const deleteRow = (index) => {
-    const updatedRows = styleData.filter((_, i) => i !== index);
-    setStyleData(updatedRows);
+    const rowToDelete = styleData[index];
+  
+    if (rowToDelete.id) {
+      axios.delete(`http://localhost:5000/styles/${rowToDelete.id}`)
+        .then(() => {
+          const updatedRows = styleData.filter((_, i) => i !== index);
+          setStyleData(updatedRows);
+  
+          if (activeStyleIndex === index) {
+            setActiveStyleIndex(null);
+          } else if (activeStyleIndex > index) {
+            setActiveStyleIndex(activeStyleIndex - 1);
+          }
+        })
+        .catch(error => console.error("Error deleting task:", error));
+    } else {
+      // If the row doesn't have an ID yet (not saved to DB), just remove locally
+      const updatedRows = styleData.filter((_, i) => i !== index);
+      setStyleData(updatedRows);
+    }  
     
     // Reset active style if the deleted row was the active one
     if (activeStyleIndex === index) {

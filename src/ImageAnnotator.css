@@ -133,3 +133,37 @@
     border-radius: 4px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
+  .flex {
+    display: flex;
+  }
+  
+  .items-center {
+    align-items: center;
+  }
+  
+  .border {
+    border-width: 1px;
+  }
+  
+  .border-gray-300 {
+    border-color: #d1d5db; /* Equivalent to gray-300 in Tailwind */
+  }
+  
+  .rounded {
+    border-radius: 0.25rem; /* Equivalent to Tailwind's default rounded */
+  }
+  
+  .overflow-hidden {
+    overflow: hidden;
+  }
+  
+  .bg-gray-100 {
+    background-color: #f3f4f6; /* Equivalent to gray-100 in Tailwind */
+  }
+  .mb-4 {
+    margin-bottom: 1rem; /* 16px */
+  }
+  .hidden {
+    display: none;
+  }
+  
