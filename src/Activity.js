@@ -5,7 +5,7 @@ import axios from "axios";
 import "./Activity.css"; // Ensure this path is correct
 import { useOutletContext } from "react-router-dom";
 
-const API_URL = "http://localhost:5000/api/activity";
+const API_URL = "https://samplify-backend-production.up.railway.app/api/activity";
 
 // Helper function to format date strings to YYYY-MM-DD for date inputs
 const formatDateForInput = (dateString) => {

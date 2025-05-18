@@ -23,7 +23,7 @@ const TrimDetail = () => {
 
   const fetchTrimDetail = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/trims/${trimName}`);
+      const response = await fetch(`https://samplify-backend-production.up.railway.app/api/trims/${trimName}`);
       if (!response.ok) throw new Error("Trim not found");
       const data = await response.json();
       setTrim(data);
@@ -41,7 +41,7 @@ const TrimDetail = () => {
   const handleAddVariant = async () => {
     if (!trim) return;
 
-    const response = await fetch(`http://localhost:5000/api/trims/${trim.id}/variants`, {
+    const response = await fetch(`https://samplify-backend-production.up.railway.app/api/trims/${trim.id}/variants`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newTrim)
@@ -60,7 +60,7 @@ const TrimDetail = () => {
     if (!window.confirm("Are you sure you want to delete this variant?")) return;
   
     try {
-      const response = await fetch(`http://localhost:5000/api/variants/${variantId}`, {
+      const response = await fetch(`https://samplify-backend-production.up.railway.app/api/variants/${variantId}`, {
         method: "DELETE",
       });
   

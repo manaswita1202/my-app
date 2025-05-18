@@ -9,7 +9,7 @@ const SampleApprovalDashboard = () => {
     useEffect(() => {
       const fetchSamples = async () => {
         try {
-          const response = await fetch("http://localhost:5000/api/approval-status");
+          const response = await fetch("https://samplify-backend-production.up.railway.app/api/approval-status");
           if (!response.ok) throw new Error("Failed to fetch samples");
   
           const data = await response.json();
@@ -26,7 +26,7 @@ const SampleApprovalDashboard = () => {
     const item = samples[from].find((sample) => sample.id === id);
     if (!item) return;
     try {
-        const response = await fetch("http://localhost:5000/api/update-status", {
+        const response = await fetch("https://samplify-backend-production.up.railway.app/api/update-status", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id, approvalStatus: to }),
@@ -98,7 +98,7 @@ const SampleApprovalDashboard = () => {
   useEffect(() => {
     const fetchSamples = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/approval-status");
+        const response = await fetch("https://samplify-backend-production.up.railway.app/api/approval-status");
         if (!response.ok) throw new Error("Failed to fetch samples");
 
         const data = await response.json();
@@ -117,7 +117,7 @@ const SampleApprovalDashboard = () => {
     if (!item) return;
 
     try {
-      const response = await fetch("http://localhost:5000/api/update-status", {
+      const response = await fetch("https://samplify-backend-production.up.railway.app/api/update-status", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, approvalStatus: to }),

@@ -4,7 +4,7 @@ import './SampleTracker.css';
 // const GARMENT_TYPES = ['Shirt', 'T-Shirt', 'Shorts', 'Trousers']; // Keep for form or fetch if dynamic
 // const SAMPLE_TYPES = [...] // This will be fetched from backend
 
-const API_BASE_URL = 'http://localhost:5000/api/sample-tracker'; // Adjust port if your Flask runs elsewhere
+const API_BASE_URL = 'https://samplify-backend-production.up.railway.app/api/sample-tracker'; // Adjust port if your Flask runs elsewhere
 
 function SampleTracker() {
   const [styles, setStyles] = useState([]);

@@ -18,7 +18,7 @@ const FabricAndTrims = () => {
 
   const fetchFabrics = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/fabrics");
+      const response = await fetch("https://samplify-backend-production.up.railway.app/api/fabrics");
       const data = await response.json();
       setFabrics(data);
     } catch (error) {
@@ -28,7 +28,7 @@ const FabricAndTrims = () => {
 
   const fetchTrims = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/trims");
+      const response = await fetch("https://samplify-backend-production.up.railway.app/api/trims");
       const data = await response.json();
       setTrims(data);
     } catch (error) {
@@ -43,7 +43,7 @@ const FabricAndTrims = () => {
       const fabricData = { name: newFabric, image: others };
 
       try {
-        const response = await fetch("http://localhost:5000/api/fabrics", {
+        const response = await fetch("https://samplify-backend-production.up.railway.app/api/fabrics", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(fabricData),
@@ -63,7 +63,7 @@ const FabricAndTrims = () => {
     if (!window.confirm(`Are you sure you want to delete ${fabricName}?`)) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/fabrics/${fabricName}`, {
+      const response = await fetch(`https://samplify-backend-production.up.railway.app/api/fabrics/${fabricName}`, {
         method: "DELETE",
       });
 
@@ -82,7 +82,7 @@ const FabricAndTrims = () => {
       const trimData = { name: newTrim, image: others };
 
       try {
-        const response = await fetch("http://localhost:5000/api/trims", {
+        const response = await fetch("https://samplify-backend-production.up.railway.app/api/trims", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(trimData),
@@ -102,7 +102,7 @@ const FabricAndTrims = () => {
     if (!window.confirm(`Are you sure you want to delete ${trimName}?`)) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/trims/${trimName}`, {
+      const response = await fetch(`https://samplify-backend-production.up.railway.app/api/trims/${trimName}`, {
         method: "DELETE",
       });
 

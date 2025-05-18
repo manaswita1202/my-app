@@ -5,7 +5,7 @@ const ViewFiles = () => {
   const [files, setFiles] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/get_uploaded_files")
+    axios.get("https://samplify-backend-production.up.railway.app/get_uploaded_files")
       .then(response => setFiles(response.data))
       .catch(error => console.error("Error fetching files:", error));
   }, []);
@@ -28,7 +28,7 @@ const ViewFiles = () => {
               <td>{file.buyerName}</td>
               <td>{file.garment}</td>
               <td>{file.fileType}</td>
-              <td><a href={`http://localhost:5000` + file.filePath} target="_blank" rel="noopener noreferrer">View</a></td>
+              <td><a href={`https://samplify-backend-production.up.railway.app` + file.filePath} target="_blank" rel="noopener noreferrer">View</a></td>
             </tr>
           ))}
         </tbody>

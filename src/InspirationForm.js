@@ -59,7 +59,7 @@ const InspirationForm = () => {
     formData.append("image", selectedImage);
   
     try {
-      const response = await fetch("http://localhost:5000/analyze-image", {
+      const response = await fetch("https://samplify-backend-production.up.railway.app/analyze-image", {
         method: "POST",
         body: formData,
       });

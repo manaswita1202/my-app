@@ -9,7 +9,7 @@ const HomePage = ({ onAddTask }) => {
 
   // Fetch styles from API when page loads
   useEffect(() => {
-    axios.get("http://localhost:5000/styles")
+    axios.get("https://samplify-backend-production.up.railway.app/styles")
       .then(response => setStyleData(response.data))
       .catch(error => console.error("Error fetching data:", error));
   }, []);
@@ -43,7 +43,7 @@ const HomePage = ({ onAddTask }) => {
     const rowToDelete = styleData[index];
   
     if (rowToDelete.id) {
-      axios.delete(`http://localhost:5000/styles/${rowToDelete.id}`)
+      axios.delete(`https://samplify-backend-production.up.railway.app/styles/${rowToDelete.id}`)
         .then(() => {
           const updatedRows = styleData.filter((_, i) => i !== index);
           setStyleData(updatedRows);
@@ -80,12 +80,12 @@ const HomePage = ({ onAddTask }) => {
   
     if (task.id) {
       // If ID exists, update the existing entry using PUT
-      axios.put(`http://localhost:5000/styles/${task.id}`, task)
+      axios.put(`https://samplify-backend-production.up.railway.app/styles/${task.id}`, task)
         .then(response => {
           alert("Task updated successfully!");
         })
         .catch(error => {
-          axios.post("http://localhost:5000/styles", task)
+          axios.post("https://samplify-backend-production.up.railway.app/styles", task)
           .then(response => {
             alert("Task added successfully!");
             const updatedRows = [...styleData];
@@ -97,7 +97,7 @@ const HomePage = ({ onAddTask }) => {
         });
     } else {
       // If no ID, create a new entry using POST
-      axios.post("http://localhost:5000/styles", task)
+      axios.post("https://samplify-backend-production.up.railway.app/styles", task)
         .then(response => {
           alert("Task added successfully!");
           const updatedRows = [...styleData];

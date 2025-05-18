@@ -19,7 +19,7 @@ const BuyerPage = () => {
   };
   const triggerNotification = async (message) => {
     try {
-      await fetch("http://localhost:5000/api/notifications", {
+      await fetch("https://samplify-backend-production.up.railway.app/api/notifications", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -48,7 +48,7 @@ const BuyerPage = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/upload_files_new", formData, {
+      const response = await axios.post("https://samplify-backend-production.up.railway.app/upload_files_new", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       triggerNotification("New style has been added - After order creation page")

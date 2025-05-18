@@ -26,7 +26,7 @@ const FabricDetail = () => {
 
   const fetchFabricDetail = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/fabrics/${fabricName}`);
+      const response = await fetch(`https://samplify-backend-production.up.railway.app/api/fabrics/${fabricName}`);
       if (!response.ok) throw new Error("Fabric not found");
       const data = await response.json();
       setFabric(data);
@@ -44,7 +44,7 @@ const FabricDetail = () => {
   const handleAddVariant = async () => {
     if (!fabric) return;
 
-    const response = await fetch(`http://localhost:5000/api/fabrics/${fabric.id}/variants`, {
+    const response = await fetch(`https://samplify-backend-production.up.railway.app/api/fabrics/${fabric.id}/variants`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newFabric)
@@ -63,7 +63,7 @@ const FabricDetail = () => {
     if (!window.confirm("Are you sure you want to delete this variant?")) return;
   
     try {
-      const response = await fetch(`http://localhost:5000/api/fabric-variants/${variantId}`, {
+      const response = await fetch(`https://samplify-backend-production.up.railway.app/api/fabric-variants/${variantId}`, {
         method: "DELETE",
       });
   

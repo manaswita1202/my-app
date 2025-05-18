@@ -18,7 +18,7 @@ const Header = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/notifications");
+        const response = await fetch("https://samplify-backend-production.up.railway.app/api/notifications");
         if (!response.ok) throw new Error("Failed to fetch notifications");
 
         const data = await response.json();
@@ -36,7 +36,7 @@ const Header = () => {
   // ✅ Dismiss (Delete) Notification
   const dismissNotification = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/notifications/${id}`, {
+      await fetch(`https://samplify-backend-production.up.railway.app/api/notifications/${id}`, {
         method: "DELETE",
       });
       setNotifications(notifications.filter((n) => n.id !== id));
@@ -48,7 +48,7 @@ const Header = () => {
   // ✅ Clear All Notifications
   const clearAllNotifications = async () => {
     try {
-      await fetch(`http://localhost:5000/api/notifications/clear-all`, {
+      await fetch(`https://samplify-backend-production.up.railway.app/api/notifications/clear-all`, {
         method: "DELETE",
       });
       setNotifications([]);

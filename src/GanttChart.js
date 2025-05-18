@@ -33,7 +33,7 @@ const GanttChart = () => {
   useEffect(() => {
     const fetchStyles = async () => {
       try {
-        const response = await fetch('http://localhost:5000/styles');
+        const response = await fetch('https://samplify-backend-production.up.railway.app/styles');
         if (response.ok) {
           const data = await response.json();
           setStyles(data);
@@ -69,7 +69,7 @@ const GanttChart = () => {
   // Fetch activities for a specific style when selected
   const fetchStyleActivities = async (styleNumber) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/activity?style=${styleNumber}`);
+      const response = await fetch(`https://samplify-backend-production.up.railway.app/api/activity?style=${styleNumber}`);
       if (response.ok) {
         const data = await response.json();
         

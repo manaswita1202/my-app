@@ -76,7 +76,7 @@ const TaskBoard = () => {
     setLastNotification({ message, timestamp: now });
     
     try {
-      await fetch("http://localhost:5000/api/notifications", {
+      await fetch("https://samplify-backend-production.up.railway.app/api/notifications", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -89,7 +89,7 @@ const TaskBoard = () => {
   };
 
   useEffect(() => {
-    fetch("http://localhost:5000/tasks")
+    fetch("https://samplify-backend-production.up.railway.app/tasks")
       .then((response) => response.json())
       .then((data) => {
         // Assuming data from API is already in the new format:
@@ -100,7 +100,7 @@ const TaskBoard = () => {
   }, []);
 
   const fetchActivityData = (styleNumber) => {
-    fetch(`http://localhost:5000/api/activity/${styleNumber}`)
+    fetch(`https://samplify-backend-production.up.railway.app/api/activity/${styleNumber}`)
       .then((response) => response.json())
       .then((data) => {
         setActivityData(prev => ({
@@ -213,7 +213,7 @@ const TaskBoard = () => {
               triggerNotification(notificationMessage);
             }
 
-            fetch(`http://localhost:5000/tasks/${taskId}`, {
+            fetch(`https://samplify-backend-production.up.railway.app/tasks/${taskId}`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ steps: updatedSteps, status: newStatus, progress: newProgress }), // Send new progress too
@@ -232,7 +232,7 @@ const TaskBoard = () => {
   };
 
   const updateActivityData = (styleNumber, process, isChecked, nextProcess) => {
-    fetch("http://localhost:5000/api/activity/update", {
+    fetch("https://samplify-backend-production.up.railway.app/api/activity/update", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -256,7 +256,7 @@ const TaskBoard = () => {
       )
     );
     // Persist comment change to backend if necessary
-    fetch(`http://localhost:5000/tasks/${taskId}`, {
+    fetch(`https://samplify-backend-production.up.railway.app/tasks/${taskId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ comment: comment }),
@@ -274,7 +274,7 @@ const TaskBoard = () => {
           
           updateActivityData(task.styleNumber, "Problem", true, null); // For activity log
           
-          fetch(`http://localhost:5000/tasks/${taskId}`, {
+          fetch(`https://samplify-backend-production.up.railway.app/tasks/${taskId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
@@ -310,7 +310,7 @@ const TaskBoard = () => {
           // The status directly becomes "completed".
           const newProgress = calculateProgress(updatedSteps); // Recalculate progress
 
-          fetch(`http://localhost:5000/tasks/${taskId}`, {
+          fetch(`https://samplify-backend-production.up.railway.app/tasks/${taskId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
@@ -372,7 +372,7 @@ const TaskBoard = () => {
       // Or, if you want optimistic update with steps, you need to define them here based on task type.
     };
   
-    fetch("http://localhost:5000/tasks", {
+    fetch("https://samplify-backend-production.up.railway.app/tasks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(taskPayload),
@@ -398,7 +398,7 @@ const TaskBoard = () => {
   };
 
   const createInitialActivityRecords = (styleNumber, stepList) => {
-    fetch("http://localhost:5000/api/activity/create", {
+    fetch("https://samplify-backend-production.up.railway.app/api/activity/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -411,7 +411,7 @@ const TaskBoard = () => {
 
   const deleteTask = (taskId) => {
     const taskToDelete = tasks.find(t => t.id === taskId);
-    fetch(`http://localhost:5000/tasks/${taskId}`, {
+    fetch(`https://samplify-backend-production.up.railway.app/tasks/${taskId}`, {
       method: "DELETE",
     })
     .then(() => {

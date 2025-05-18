@@ -5,14 +5,14 @@ const LabDips = () => {
     const [labDips, setLabDips] = useState({ approved: [], pending: [], yetToSend: [] });
 
     useEffect(() => {
-        fetch("http://localhost:5000/lab_dips")
+        fetch("https://samplify-backend-production.up.railway.app/lab_dips")
             .then(res => res.json())
             .then(data => setLabDips(data))
             .catch(err => console.error("Error fetching Lab Dips:", err));
     }, []);
 
     const moveSample = (id, from, to) => {
-        fetch(`http://localhost:5000/lab_dips/${id}/status`, {
+        fetch(`https://samplify-backend-production.up.railway.app/lab_dips/${id}/status`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: to })

@@ -17,7 +17,7 @@ function OrderTracker() {
   });
 
   useEffect(() => {
-    fetch("http://localhost:5000/get_couriers")
+    fetch("https://samplify-backend-production.up.railway.app/get_couriers")
       .then(response => response.json())
       .then(data => setCouriers(data))
       .catch(error => console.error("Error fetching couriers:", error));
@@ -41,7 +41,7 @@ function OrderTracker() {
       })),
       date: null
     };
-    fetch("http://localhost:5000/add_courier", {
+    fetch("https://samplify-backend-production.up.railway.app/add_courier", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(courier)
@@ -72,7 +72,7 @@ function OrderTracker() {
   //         placement: newOrders[orderIndex].placement || new Date(),
   //         date: !newOrders[orderIndex].completed ? new Date() : null
   //       };
-  //       fetch(`http://localhost:5000/update_order/${courierId}`, {
+  //       fetch(`https://samplify-backend-production.up.railway.app/update_order/${courierId}`, {
   //         method: "POST",
   //         headers: { "Content-Type": "application/json" },
   //         body: JSON.stringify({ orders: newOrders })
@@ -105,7 +105,7 @@ function OrderTracker() {
         };
   
         // Send API request
-        fetch("http://localhost:5000/update_order", {
+        fetch("https://samplify-backend-production.up.railway.app/update_order", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updatedOrder),
@@ -139,7 +139,7 @@ function OrderTracker() {
 
   const deleteCourier = (courierId) => {
     if (window.confirm('Are you sure you want to delete this courier?')) {
-      fetch(`http://localhost:5000/couriers/${courierId}`, { method: "DELETE" })
+      fetch(`https://samplify-backend-production.up.railway.app/couriers/${courierId}`, { method: "DELETE" })
         .then(() => setCouriers(couriers.filter(courier => courier.id !== courierId)))
         .catch(error => console.error("Error deleting courier:", error));
     }
