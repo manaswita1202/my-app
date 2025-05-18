@@ -3,68 +3,53 @@ import { Plus, Mail, Search, Download, Trash2 } from 'lucide-react';
 import './PurchaseRequest.css'; // Import the CSS file
 
 const PurchaseRequestPage = () => {
+  // State for styles
+  const [availableStyles, setAvailableStyles] = useState([]);
+  const [stylesLoading, setStylesLoading] = useState(true);
+  const [stylesError, setStylesError] = useState(null);
+
+  // State for selected styles and BOM
   const [selectedStyles, setSelectedStyles] = useState([]);
   const [bomData, setBomData] = useState([]);
+  
+  // State for UI elements
   const [customColumns, setCustomColumns] = useState([]);
   const [newColumnName, setNewColumnName] = useState('');
   const [showAddColumn, setShowAddColumn] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isProcessingPR, setIsProcessingPR] = useState(false);
 
-  // Mock styles data - replace with your actual styles
-  const availableStyles = [
-    { id: 1, code: 'ST001', name: 'Summer Collection A' },
-    { id: 2, code: 'ST002', name: 'Winter Collection B' },
-    { id: 3, code: 'ST003', name: 'Spring Collection C' },
-    { id: 4, code: 'ST004', name: 'Autumn Collection D' },
-    { id: 5, code: 'ST005', name: 'Casual Wear E' },
-  ];
-
-  // Mock BOM data fetching function
-  const fetchBOMData = async (styleIds) => {
-    setIsLoading(true);
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock BOM data - replace with actual API call
-    const mockBomData = styleIds.flatMap(styleId => [
-      {
-        id: `${styleId}-1`,
-        styleId,
-        type: 'Fabric',
-        code: `FAB${styleId}001`,
-        name: `Cotton Blend Fabric ${styleId}`,
-        quantity: 5.5,
-        unit: 'mts',
-        supplier: 'Fabric Supplier A',
-        prChecked: false
-      },
-      {
-        id: `${styleId}-2`,
-        styleId,
-        type: 'Trim',
-        code: `TRM${styleId}001`,
-        name: `Button Set ${styleId}`,
-        quantity: 12,
-        unit: 'pcs',
-        supplier: 'Trim Supplier B',
-        prChecked: false
-      },
-      {
-        id: `${styleId}-3`,
-        styleId,
-        type: 'Trim',
-        code: `TRM${styleId}002`,
-        name: `Zipper ${styleId}`,
-        quantity: 1,
-        unit: 'pc',
-        supplier: 'Zipper Supplier C',
-        prChecked: false
+  // Fetch available styles from API on component mount
+  useEffect(() => {
+    const fetchStyles = async () => {
+      setStylesLoading(true);
+      setStylesError(null);
+      try {
+        const response = await fetch('http://localhost:5000/styles');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        // Map API data. Store the full original style object for later access to techpackData.
+        setAvailableStyles(data.map(s => ({
+          id: s.id,
+          // Use styleNumber for 'code' display on the card
+          code: s.styleNumber, 
+          // Construct a 'name' for display on the card
+          name: `${s.brand || 'N/A'} - ${s.garment || s.sampleType || s.styleNumber || 'Unnamed Style'}`, 
+          // Store the full original object from API
+          originalStyleData: s 
+        })));
+      } catch (error) {
+        console.error("Failed to fetch styles:", error);
+        setStylesError(error.message);
+      } finally {
+        setStylesLoading(false);
       }
-    ]);
-    
-    setBomData(mockBomData);
-    setIsLoading(false);
-  };
+    };
+
+    fetchStyles();
+  }, []);
 
   const handleStyleSelection = (style) => {
     setSelectedStyles(prev => {
@@ -72,7 +57,8 @@ const PurchaseRequestPage = () => {
       if (isSelected) {
         return prev.filter(s => s.id !== style.id);
       } else {
-        return [...prev, style];
+        // 'style' here is the mapped object: { id, code, name, originalStyleData }
+        return [...prev, style]; 
       }
     });
   };
@@ -82,8 +68,66 @@ const PurchaseRequestPage = () => {
       alert('Please select at least one style');
       return;
     }
-    const styleIds = selectedStyles.map(style => style.id);
-    fetchBOMData(styleIds);
+    setIsProcessingPR(true);
+    setBomData([]); // Clear previous BOM data
+
+    const newBomData = [];
+    let bomItemIdCounter = 0; // For generating unique IDs for BOM items
+
+    selectedStyles.forEach(selectedStyleMapped => {
+      // Access the original style data which contains techpackData
+      const styleApiData = selectedStyleMapped.originalStyleData; 
+
+      const techpack = styleApiData.techpackData;
+      if (techpack && techpack.bom) {
+        const { fabric, trims } = techpack.bom;
+
+        // IMPORTANT: The following sections assume specific key names within your 
+        // techpackData.bom.fabric and techpackData.bom.trims arrays.
+        // Assumed keys for items: item_code, item_name, consumption, uom, supplier.
+        // Please ADJUST these keys if your actual API data uses different names.
+        // For example, if 'consumption' is 'qty_needed', change `item.consumption` to `item.qty_needed`.
+
+        // Process Fabric items
+        if (fabric && Array.isArray(fabric)) {
+          fabric.forEach((item, index) => {
+            newBomData.push({
+              id: `bom-item-${bomItemIdCounter++}`, // Unique ID for the BOM item row
+              styleId: styleApiData.id,
+              type: 'Fabric',
+              code: item.code || `FAB-CODE-${styleApiData.id}-${index}`, // Fallback if item_code is missing
+              name: item.description || `Fabric Item ${index + 1}`, // Fallback
+              quantity: item.quantity !== undefined ? item.quantity : 0, // Fallback
+              unit: item.uom || 'N/A', // Fallback
+              supplier: item.supplier || 'N/A', // Fallback
+              prChecked: false,
+            });
+          });
+        }
+
+        // Process Trims items
+        if (trims && Array.isArray(trims)) {
+          trims.forEach((item, index) => {
+            newBomData.push({
+              id: `bom-item-${bomItemIdCounter++}`, // Unique ID for the BOM item row
+              styleId: styleApiData.id,
+              type: 'Trim',
+              code: item.code || `TRIM-CODE-${styleApiData.id}-${index}`, // Fallback if item_code is missing
+              name: item.trim || `Trim Item ${index + 1}`, // Fallback
+              quantity: item.quantity !== undefined ? item.quantity : 0, // Fallback
+              unit: item.uom || 'N/A', // Fallback
+              supplier: item.supplier || 'N/A', // Fallback
+              prChecked: false,
+            });
+          });
+        }
+      } else {
+        console.warn(`Style ${styleApiData.styleNumber} (ID: ${styleApiData.id}) has no techpackData or bom data.`);
+      }
+    });
+    
+    setBomData(newBomData);
+    setIsProcessingPR(false);
   };
 
   const togglePRCheck = (itemId) => {
@@ -95,7 +139,7 @@ const PurchaseRequestPage = () => {
   const addCustomColumn = () => {
     if (newColumnName.trim()) {
       setCustomColumns(prev => [...prev, { 
-        id: Date.now(), 
+        id: `col-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, // More robust unique ID
         name: newColumnName.trim() 
       }]);
       setNewColumnName('');
@@ -105,6 +149,14 @@ const PurchaseRequestPage = () => {
 
   const removeCustomColumn = (columnId) => {
     setCustomColumns(prev => prev.filter(col => col.id !== columnId));
+    // Also remove data for this column from bomData items
+    setBomData(prevBomData => prevBomData.map(item => {
+      if (item.customData && item.customData.hasOwnProperty(columnId)) {
+        const { [columnId]: _, ...restCustomData } = item.customData;
+        return { ...item, customData: restCustomData };
+      }
+      return item;
+    }));
   };
 
   const updateCustomColumnValue = (itemId, columnId, value) => {
@@ -113,7 +165,7 @@ const PurchaseRequestPage = () => {
         return {
           ...item,
           customData: {
-            ...item.customData,
+            ...(item.customData || {}),
             [columnId]: value
           }
         };
@@ -128,14 +180,25 @@ const PurchaseRequestPage = () => {
       alert('Please select at least one item for PR');
       return;
     }
-
+  
     const subject = 'Purchase Request - Trims/Fabric Code PR';
-    const body = 'Hi Eswar, Plz fnd the attached trims/fabric code PR';
+  
+    // Build body content from selected items
+    let body = `Hi Eswar,\n\nPlease find the attached trims/fabric code PR:\n\n`;
+    checkedItems.forEach((item, index) => {
+      body += `Item ${index + 1}:\n`;
+      body += `  Code     : ${item.code}\n`;
+      body += `  Name     : ${item.name}\n`;
+      body += `  Quantity : ${item.quantity} ${item.unit}\n`;
+      body += `  Supplier : ${item.supplier}\n\n`;
+    });
+  
+    body += `Regards,\n[Your Name]`; // Optional closing
+  
     const emailUrl = `mailto:eswar.a@arvindexports.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
-    window.open(emailUrl);
+    window.open(emailUrl, '_blank');
   };
-
+  
   const exportToCSV = () => {
     const checkedItems = bomData.filter(item => item.prChecked);
     if (checkedItems.length === 0) {
@@ -157,14 +220,35 @@ const PurchaseRequestPage = () => {
       ].join(','))
     ].join('\n');
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `purchase_request_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link); // Required for Firefox and some other browsers
     link.click();
+    document.body.removeChild(link); // Clean up
     window.URL.revokeObjectURL(url);
   };
+
+  // UI Rendering based on styles loading state
+  if (stylesLoading) {
+    // Users should define .loading-container and .loading-spinner-large in PurchaseRequest.css
+    return (
+      <div className="loading-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', fontSize: '1.2rem' }}>
+        <div className="loading-spinner-large" style={{ border: '6px solid #f3f3f3', borderTop: '6px solid #3498db', borderRadius: '50%', width: '50px', height: '50px', animation: 'spin 1s linear infinite', marginBottom: '20px' }}></div>
+        <p>Loading styles...</p>
+        <style>
+          {`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}
+        </style>
+      </div>
+    );
+  }
+
+  if (stylesError) {
+     // Users should define .error-container in PurchaseRequest.css
+    return <div className="error-container" style={{color: 'red', textAlign: 'center', marginTop: '50px'}}>Error loading styles: {stylesError}. Please try refreshing the page or check if the API is running.</div>;
+  }
 
   return (
     <div className="purchase-request-container">
@@ -172,35 +256,37 @@ const PurchaseRequestPage = () => {
         <div className="main-card">
           <h1 className="page-title">Purchase Request Generator</h1>
           
-          {/* Style Selection Section */}
           <div className="section-wrapper">
             <h2 className="section-header">Select Styles</h2>
-            <div className="styles-grid">
-              {availableStyles.map(style => (
-                <div
-                  key={style.id}
-                  className={`style-card ${selectedStyles.find(s => s.id === style.id) ? 'selected' : ''}`}
-                  onClick={() => handleStyleSelection(style)}
-                >
-                  <div className="style-card-content">
-                    <div className="style-info">
-                      <p className="style-code">{style.code}</p>
-                      <p className="style-name">{style.name}</p>
+            {availableStyles.length > 0 ? (
+              <div className="styles-grid">
+                {availableStyles.map(style => ( // style is the mapped object: {id, code, name, originalStyleData}
+                  <div
+                    key={style.id}
+                    className={`style-card ${selectedStyles.find(s => s.id === style.id) ? 'selected' : ''}`}
+                    onClick={() => handleStyleSelection(style)}
+                  >
+                    <div className="style-card-content">
+                      <div className="style-info">
+                        <p className="style-code">{style.code}</p>
+                        <p className="style-name">{style.name}</p>
+                      </div>
+                      <div className={`style-checkbox ${selectedStyles.find(s => s.id === style.id) ? 'checked' : ''}`}></div>
                     </div>
-                    <div className={`style-checkbox ${selectedStyles.find(s => s.id === style.id) ? 'checked' : ''}`}></div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p>No styles available.</p>
+            )}
             
-            {/* Generate PR Button */}
             <div style={{ marginTop: '1.5rem' }}>
               <button
                 onClick={generatePR}
-                disabled={selectedStyles.length === 0 || isLoading}
+                disabled={selectedStyles.length === 0 || isProcessingPR}
                 className="btn btn-primary"
               >
-                {isLoading ? (
+                {isProcessingPR ? (
                   <>
                     <div className="loading-spinner"></div>
                     Generating PR...
@@ -215,8 +301,14 @@ const PurchaseRequestPage = () => {
             </div>
           </div>
 
-          {/* BOM Data Table */}
-          {bomData.length > 0 && (
+          {isProcessingPR && bomData.length === 0 && (
+             <div className="section-wrapper" style={{textAlign: 'center', padding: '2rem'}}>
+                <div className="loading-spinner"></div>
+                <p>Processing BOM items...</p>
+             </div>
+          )}
+
+          {bomData.length > 0 && !isProcessingPR && (
             <div className="section-wrapper">
               <div className="table-header">
                 <h2 className="section-header">BOM Items</h2>
@@ -238,7 +330,6 @@ const PurchaseRequestPage = () => {
                 </div>
               </div>
 
-              {/* Add Column Modal */}
               {showAddColumn && (
                 <div className="modal-overlay">
                   <div className="modal-content">
@@ -290,6 +381,7 @@ const PurchaseRequestPage = () => {
                             <button
                               onClick={() => removeCustomColumn(column.id)}
                               className="remove-column-btn"
+                              title={`Remove column "${column.name}"`}
                             >
                               <Trash2 size={16} />
                             </button>
@@ -338,7 +430,6 @@ const PurchaseRequestPage = () => {
                 </table>
               </div>
 
-              {/* Email Button */}
               <div className="email-section">
                 <button
                   onClick={sendEmail}
@@ -355,13 +446,21 @@ const PurchaseRequestPage = () => {
             </div>
           )}
 
-          {/* Empty State */}
-          {bomData.length === 0 && !isLoading && (
+          {/* Empty State for BOM Data */}
+          {bomData.length === 0 && !isProcessingPR && selectedStyles.length > 0 && (
+             <div className="empty-state">
+                <div className="empty-state-icon">
+                    <Search size={64} />
+                </div>
+                <p className="empty-state-text">No BOM items found for the selected styles. This could mean the styles have no fabric/trim data in their techpack, or the techpack data is empty.</p>
+            </div>
+          )}
+          {bomData.length === 0 && !isProcessingPR && selectedStyles.length === 0 && availableStyles.length > 0 && (
             <div className="empty-state">
               <div className="empty-state-icon">
                 <Search size={64} />
               </div>
-              <p className="empty-state-text">Select styles and click "Generate PR" to view BOM items</p>
+              <p className="empty-state-text">Select styles and click "Generate PR" to view BOM items.</p>
             </div>
           )}
         </div>
