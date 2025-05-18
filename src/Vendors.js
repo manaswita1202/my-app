@@ -9,9 +9,9 @@ import nkPackLogo from "./assets/nkp.png";
 
 const VendorPage = () => {
   const [fabricVendors, setFabricVendors] = useState([
-    { logo: arvindLogo, name: "Arvind Mills", location: "Akskere", vendorNumber: "12345", contactPerson: "John Doe", phone: "9876543210", email: "john@arvind.com" },
-    { logo: arvindLogo, name: "Arvind Mills", location: "Indore", vendorNumber: "12345", contactPerson: "John Doe", phone: "9876543210", email: "john@arvind.com" },
-    { logo: gmsLogo, name: "GMS Processors Pvt Ltd", location: "Tirupur", vendorNumber: "67890", contactPerson: "Jane Smith", phone: "9876543211", email: "jane@gms.com" }
+    { logo: arvindLogo, name: "Arvind Mills", location: "Akskere", vendorNumber: "456576", contactPerson: "Ajeet Kumar", phone: "9876543210", email: "ajeetk@arvindmills.in" },
+    { logo: arvindLogo, name: "Arvind Mills", location: "Indore", vendorNumber: "456577", contactPerson: "Bhaskara J", phone: "8100019632", email: "bhaskaraj@arvindmills.in" },
+    { logo: gmsLogo, name: "GMS Processors Pvt Ltd", location: "Tirupur", vendorNumber: "67890", contactPerson: "Karthike CS", phone: "8986922189", email: "karthikecs@gmp.com" }
   ]);
 
   const [trimVendors, setTrimVendors] = useState([

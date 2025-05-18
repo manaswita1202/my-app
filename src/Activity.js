@@ -2,10 +2,35 @@ import React, { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import axios from "axios";
-import "./Activity.css";
+import "./Activity.css"; // Ensure this path is correct
 import { useOutletContext } from "react-router-dom";
 
 const API_URL = "http://localhost:5000/api/activity";
+
+// Helper function to format date strings to YYYY-MM-DD for date inputs
+const formatDateForInput = (dateString) => {
+  if (!dateString) return ""; // Return empty string if null, undefined, or empty
+  try {
+    const date = new Date(dateString);
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+        // Handle cases where dateString might already be in YYYY-MM-DD or is otherwise unparsable by new Date()
+        // A more robust check might be needed if various invalid formats are common
+        if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+            return dateString; // Already in correct format
+        }
+        console.warn("Invalid date string encountered for formatting:", dateString);
+        return ""; // Return empty for invalid dates
+    }
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  } catch (error) {
+    console.error("Error formatting date:", dateString, error);
+    return ""; // Fallback
+  }
+};
 
 const Activity = () => {
   const [buyer, setBuyer] = useState("");
@@ -15,7 +40,8 @@ const Activity = () => {
   const [receivedDate, setReceivedDate] = useState("");
   const [leadTime, setLeadTime] = useState("");
   const [tableData, setTableData] = useState([]);
-  const { activityData, setActivityData, styleData, setStyleData,activeStyleIndex, setActiveStyleIndex } = useOutletContext(); // Get from Layout
+  // Assuming activeStyleIndex is a number (index) and styleData is an array from context
+  const { activityData, setActivityData, styleData, setStyleData, activeStyleIndex, setActiveStyleIndex } = useOutletContext();
 
   // Initialize form data from active style
   useEffect(() => {
@@ -24,20 +50,34 @@ const Activity = () => {
       
       setBuyer(activeStyle.brand || "");
       setStyle(activeStyle.styleNumber || "");
-      setDescription(activeStyle.brand || "");
+      setDescription(activeStyle.brand || ""); // Or activeStyle.garment as per your data structure
       setOrderQty(activeStyle.quantity || "");
-      setReceivedDate(activeStyle.orderReceivedDate || "");
+      // ORIGINAL: Do not format receivedDate here for the input, assuming API sends compatible format or it's handled by input type="date"
+      setReceivedDate(activeStyle.orderReceivedDate || ""); 
       
-      // Calculate lead time in days
       if (activeStyle.orderReceivedDate && activeStyle.orderDeliveryDate) {
         const startDate = new Date(activeStyle.orderReceivedDate);
         const endDate = new Date(activeStyle.orderDeliveryDate);
-        const diffTime = Math.abs(endDate - startDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        setLeadTime(diffDays.toString());
+        if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
+            const diffTime = Math.abs(endDate - startDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            setLeadTime(diffDays.toString());
+        } else {
+            setLeadTime("");
+        }
+      } else {
+        setLeadTime("");
       }
+    } else {
+      // Clear fields if no active style
+      setBuyer("");
+      setStyle("");
+      setDescription("");
+      setOrderQty("");
+      setReceivedDate("");
+      setLeadTime("");
     }
-  }, [styleData, activeStyleIndex]);
+  }, [styleData, activeStyleIndex]); // Original dependencies
 
   // Default processes for new entries
   const defaultProcesses = [
@@ -58,67 +98,105 @@ const Activity = () => {
 
   // Fetch or create activity data when style changes
   useEffect(() => {
-    if (!style) return; // Don't fetch if style is empty
+    if (!style) {
+        setTableData([]); // Clear table if no style
+        if (setActivityData) setActivityData([]); // Clear context data as well
+        return;
+    }
   
-    const fetchActivityData = () => {
+    const fetchAndProcessActivityData = (isRetryAfterCreate = false) => {
       axios.get(API_URL, { params: { style } })
         .then(response => {
-          setTableData(response.data);
-          setActivityData(response.data);
+          const formattedData = response.data.map(row => ({
+            ...row,
+            // MODIFIED: Only format actualStart and actualEnd for date input display
+            actualStart: formatDateForInput(row.actualStart),
+            actualEnd: formatDateForInput(row.actualEnd),
+            // plannedStart and plannedEnd are kept as is from API for now
+            // If they also need formatting for display, apply formatDateForInput here too.
+          }));
+          setTableData(formattedData);
+          if (setActivityData) { // Update context
+            setActivityData(formattedData); // Send the same formatted data to context
+          }
         })
-        .catch(error => console.error("Error fetching activity data:", error));
+        .catch(error => {
+          if (!isRetryAfterCreate && error.response && error.response.status === 404) {
+            // If 404 and not a retry, create new activity entry
+            axios.post(API_URL, { 
+              style, 
+              buyer, 
+              description, 
+              orderQty, 
+              receivedDate, // Send date as is; backend should handle parsing
+              leadTime, 
+              processes: defaultProcesses 
+            })
+            .then(() => {
+              fetchAndProcessActivityData(true); // Fetch newly created data
+            })
+            .catch(err => console.error("Error creating activity data:", err));
+          } else {
+            console.error("Error fetching activity data:", error);
+            setTableData([]);
+            if (setActivityData) setActivityData([]);
+          }
+        });
     };
     
-    axios.get(API_URL, { params: { style } })
-      .then(response => {
-        setTableData(response.data);
-        setActivityData(response.data);
-      })
-      .catch(error => {
-        if (error.response && error.response.status === 404) {
-          // If 404, create new activity entry with default processes
-          axios.post(API_URL, { 
-            style, 
-            buyer, 
-            description, 
-            orderQty, 
-            receivedDate, 
-            leadTime, 
-            processes: defaultProcesses 
-          })
-          .then(() => {
-            fetchActivityData(); // Fetch newly created data
-          })
-          .catch(err => console.error("Error creating activity data:", err));
-        } else {
-          console.error("Error fetching activity data:", error);
-        }
-      });
-  }, [style, buyer, description, orderQty, receivedDate, leadTime]); // Added dependencies
+    fetchAndProcessActivityData();
+
+  }, [style, buyer, description, orderQty, receivedDate, leadTime, setActivityData]); // Original dependencies + setActivityData (if it's stable)
 
   // Handle Actual Date Changes
-  const handleActualDateChange = (id, field, value) => {
+  const handleActualDateChange = (id, field, value) => { // value is YYYY-MM-DD from input
     const updatedData = tableData.map(row => {
       if (row.id === id) {
         const updatedRow = { ...row, [field]: value };
 
+        // Recalculate actualDuration and delay
         if (updatedRow.actualStart && updatedRow.actualEnd) {
-          const actualStart = new Date(updatedRow.actualStart);
+          const actualStart = new Date(updatedRow.actualStart); // YYYY-MM-DD is fine for new Date()
           const actualEnd = new Date(updatedRow.actualEnd);
-          updatedRow.actualDuration = (actualEnd - actualStart) / (1000 * 60 * 60 * 24);
-          updatedRow.delay = Math.max((actualEnd - new Date(updatedRow.plannedEnd)) / (1000 * 60 * 60 * 24), 0);
+          if (!isNaN(actualStart.getTime()) && !isNaN(actualEnd.getTime())) {
+            updatedRow.actualDuration = (actualEnd - actualStart) / (1000 * 60 * 60 * 24); // Duration in days
+            
+            if (updatedRow.plannedEnd) { // Ensure plannedEnd exists and is valid
+                const plannedEnd = new Date(updatedRow.plannedEnd); // This might be unformatted from API
+                if (!isNaN(plannedEnd.getTime())) {
+                    updatedRow.delay = Math.max(0, (actualEnd - plannedEnd) / (1000 * 60 * 60 * 24)); // Delay in days
+                } else {
+                    updatedRow.delay = null; 
+                }
+            } else {
+                updatedRow.delay = null;
+            }
+          } else {
+            updatedRow.actualDuration = null; 
+            updatedRow.delay = null; 
+          }
+        } else {
+            updatedRow.actualDuration = null;
+            if (!updatedRow.actualEnd && updatedRow.plannedEnd) { 
+                updatedRow.delay = null;
+            }
         }
-        
         return updatedRow;
       }
       return row;
     });
 
     setTableData(updatedData);
-    setActivityData(updatedData);
+    if (setActivityData) {
+        setActivityData(updatedData); // Update context
+    }
 
-    axios.put(`${API_URL}/${id}`, { [field]: value })
-      .catch(err => console.error("Error updating actual date:", err));
+    // Persist the change to the backend
+    axios.put(`${API_URL}/${id}`, { [field]: value }) // Send YYYY-MM-DD string
+      .catch(err => {
+          console.error("Error updating actual date:", err);
+          // Optionally revert UI state if API call fails
+      });
   };
 
   // Export as PDF
@@ -128,8 +206,16 @@ const Activity = () => {
     doc.autoTable({
       head: [["S No.", "Process", "Duration", "Planned Start", "Planned End", "Actual Start", "Actual End", "Actual Duration", "Delay", "Responsibility"]],
       body: tableData.map((row, index) => [
-        index + 1, row.process, row.duration, row.plannedStart, row.plannedEnd,
-        row.actualStart, row.actualEnd, row.actualDuration, row.delay, row.responsibility
+        index + 1, 
+        row.process, 
+        row.duration, 
+        row.plannedStart, // This will be as per API or formatted if you choose to
+        row.plannedEnd,   // This will be as per API or formatted if you choose to
+        row.actualStart,  // This is formatted for YYYY-MM-DD
+        row.actualEnd,    // This is formatted for YYYY-MM-DD
+        row.actualDuration !== null && row.actualDuration !== undefined ? row.actualDuration : "", // Original display
+        row.delay !== null && row.delay !== undefined ? row.delay : "", // Original display
+        row.responsibility
       ])
     });
     doc.save("activity_report.pdf");
@@ -147,6 +233,7 @@ const Activity = () => {
 
         <label>Description:</label>
         <select value={description} onChange={(e) => setDescription(e.target.value)}>
+          <option value="">Select Description</option>
           <option value="Shirt">Shirt</option>
           <option value="Polo T-shirt">Polo T-shirt</option>
           <option value="Shorts">Shorts</option>
@@ -160,7 +247,7 @@ const Activity = () => {
         <input type="date" value={receivedDate} onChange={(e) => setReceivedDate(e.target.value)} />
 
         <label>Lead Time (Days):</label>
-        <input type="number" value={leadTime} onChange={(e) => setLeadTime(e.target.value)} />
+        <input type="number" value={leadTime} onChange={(e) => setLeadTime(e.target.value)} /> {/* Reverted readOnly */}
       </div>
 
       <table>
@@ -179,24 +266,26 @@ const Activity = () => {
           </tr>
         </thead>
         <tbody>
+          {/* Ensure row.id is a unique and stable identifier if possible, otherwise index is a fallback */}
           {tableData.map((row, index) => (
-            <tr key={index}>
+            <tr key={row.id || index}> {/* Prefer row.id if available and unique */}
               <td>{index + 1}</td>
               <td>{row.process}</td>
               <td>{row.duration}</td>
-              <td>{row.plannedStart}</td>
-              <td>{row.plannedEnd}</td>
+              <td>{row.plannedStart}</td> {/* Display as is from (potentially formatted) tableData */}
+              <td>{row.plannedEnd}</td>   {/* Display as is from (potentially formatted) tableData */}
+              {/* Value for date inputs should be YYYY-MM-DD */}
               <td><input type="date" value={row.actualStart || ""} onChange={(e) => handleActualDateChange(row.id, "actualStart", e.target.value)} /></td>
               <td><input type="date" value={row.actualEnd || ""} onChange={(e) => handleActualDateChange(row.id, "actualEnd", e.target.value)} /></td>
-              <td>{row.actualDuration}</td>
-              <td>{row.delay}</td>
+              <td>{row.actualDuration}</td> {/* Reverted .toFixed() */}
+              <td>{row.delay}</td>        {/* Reverted .toFixed() */}
               <td>{row.responsibility}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <button onClick={handleExportPDF}>Export PDF</button>
+      <button onClick={handleExportPDF} className="export-pdf-button">Export PDF</button>
     </div>
   );
 };

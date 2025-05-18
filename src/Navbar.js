@@ -129,6 +129,13 @@ const Home = ({ onCollapse }) => {
               >
                 Order Tracking
               </button>
+              <button
+                className="dropdown-item"
+                onClick={() => handleNavigation("performance")}
+              >
+                Performance Charts
+              </button>
+
             </div>
           )}
         </div>
@@ -156,9 +163,9 @@ const Home = ({ onCollapse }) => {
         <button 
           className="sidebar-button" 
           onClick={() => handleNavigation("fabric-trims")}
-          title={isCollapsed ? "Trims" : ""}
+          title={isCollapsed ? "Repository" : ""}
         >
-          {isCollapsed ? "🧵" : "Trims"}
+          {isCollapsed ? "🧵" : "Repository"}
         </button>
         
         <button 
@@ -207,6 +214,14 @@ const Home = ({ onCollapse }) => {
           title={isCollapsed ? "BOM" : ""}
         >
           {isCollapsed ? "📦" : "BOM"}
+        </button>
+
+        <button
+          className={`sidebar-button ${activeTab === "inspirationform" ? "active" : ""}`}
+          onClick={() => handleNavigation("inspirationform")}
+          title={isCollapsed ? "Inspiration Form" : ""}
+        >
+          {isCollapsed ? "🎨" : "Inspiration Form"}
         </button>
         
         <button 

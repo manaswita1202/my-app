@@ -9,7 +9,19 @@ const BRAND = ['Hugo Boss', 'Arrow', 'US Polo'];
 // Define a sequence of steps for the manufacturing process
 // NOTE: API responses show dynamic step names. This static sequence might need re-evaluation
 // for functions like getNextProcess if step names vary significantly per task.
-const PROCESS_SEQUENCE = ["Start", "indent", "pattern", "fabric", "embroidery", "packing", "Problem"];
+const PROCESS_SEQUENCE = ["Order Receipt (Buyer PO)",
+    "CAD Consumption Received",
+    "BOM Generation",
+    "PO Issue for Fabric & Trims",
+    "Fabric Received",
+    "Sample Indent Made",
+    "Pattern Cutting",
+    "Sewing",
+    "Embroidery",
+    "Finishing",
+    "Packing",
+    "Documentation in PLM",
+    "Dispatch", "Problem"];
 
 const initialTasks = [
   {
@@ -47,8 +59,22 @@ const TaskBoard = () => {
     status: "toBeDone",
   });
   const [activityData, setActivityData] = useState({});
+  
+  // Add state for notification deduplication and update prevention
+  const [lastNotification, setLastNotification] = useState({ message: null, timestamp: null });
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const triggerNotification = async (message) => {
+    // Prevent duplicate notifications within 1 second
+    const now = Date.now();
+    if (lastNotification.message === message && 
+        lastNotification.timestamp && 
+        (now - lastNotification.timestamp) < 1000) {
+      return; // Skip duplicate notification
+    }
+
+    setLastNotification({ message, timestamp: now });
+    
     try {
       await fetch("http://localhost:5000/api/notifications", {
         method: "POST",
@@ -131,63 +157,78 @@ const TaskBoard = () => {
     return Math.round(progress);
   };
 
-  const handleCheckboxChange = (taskId, stepName) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => {
-        if (task.id === taskId) {
-          const updatedSteps = task.steps.map(s =>
-            s.step_name === stepName ? { ...s, is_completed: !s.is_completed } : s
-          );
+  const handleCheckboxChange = async (taskId, stepName) => {
+    // Prevent multiple simultaneous updates
+    if (isUpdating) return;
+    setIsUpdating(true);
 
-          let newProgress = calculateProgress(updatedSteps);
-          const problemStep = updatedSteps.find(s => s.step_name === "Problem");
-          const isProblemActive = problemStep ? problemStep.is_completed : false;
+    try {
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => {
+          if (task.id === taskId) {
+            const updatedSteps = task.steps.map(s =>
+              s.step_name === stepName ? { ...s, is_completed: !s.is_completed } : s
+            );
 
-          let newStatus = "inProgress"; // Default status after a change
+            let newProgress = calculateProgress(updatedSteps);
+            const problemStep = updatedSteps.find(s => s.step_name === "Problem");
+            const isProblemActive = problemStep ? problemStep.is_completed : false;
 
-          if (newProgress === 100 && !isProblemActive) {
-            newStatus = "completed";
-          } else if (isProblemActive) {
-             // If problem is active, task is not completed, remains/becomes inProgress
-             // reportProblem() function handles moving to "pending"
-            newStatus = "inProgress";
-          }
+            let newStatus = "inProgress"; // Default status after a change
+            let shouldTriggerNotification = false;
+            let notificationMessage = "";
 
-
-          // Handle transition from "toBeDone" when "Start" step is checked
-          const startStep = updatedSteps.find(s => s.step_name === "Start");
-          if (task.status === "toBeDone" && startStep && startStep.is_completed) {
-            if (newStatus !== "completed") { // Avoid overriding if it became completed in one go
-                newStatus = "inProgress";
+            if (newProgress === 100 && !isProblemActive) {
+              newStatus = "completed";
+              shouldTriggerNotification = true;
+              notificationMessage = `Style ${task.styleNumber} has been completed`;
+            } else if (isProblemActive) {
+              // If problem is active, task is not completed, remains/becomes inProgress
+              // reportProblem() function handles moving to "pending"
+              newStatus = "inProgress";
             }
-          } else if (task.status === "toBeDone" && (!startStep || !startStep.is_completed)) {
-            newStatus = "toBeDone"; // Remain toBeDone if Start not completed
+
+            // Handle transition from "toBeDone" when "Start" step is checked
+            const startStep = updatedSteps.find(s => s.step_name === "Start");
+            if (task.status === "toBeDone" && startStep && startStep.is_completed) {
+              if (newStatus !== "completed") { // Avoid overriding if it became completed in one go
+                  newStatus = "inProgress";
+              }
+            } else if (task.status === "toBeDone" && (!startStep || !startStep.is_completed)) {
+              newStatus = "toBeDone"; // Remain toBeDone if Start not completed
+            }
+
+            const isChecked = updatedSteps.find(s => s.step_name === stepName)?.is_completed;
+            const nextProcess = getNextProcess(stepName);
+            updateActivityData(task.styleNumber, stepName, isChecked, nextProcess);
+            
+            // Only trigger one notification: either completion or step completion, but not both
+            if (!shouldTriggerNotification && isChecked && stepName !== "Problem") {
+              shouldTriggerNotification = true;
+              notificationMessage = `Process ${stepName} for ${task.styleNumber} marked as done.`;
+            }
+
+            // Trigger notification only once
+            if (shouldTriggerNotification) {
+              triggerNotification(notificationMessage);
+            }
+
+            fetch(`http://localhost:5000/tasks/${taskId}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ steps: updatedSteps, status: newStatus, progress: newProgress }), // Send new progress too
+            }).catch(error => console.error("Error updating task:", error));
+            
+            // Note: task.ProblemReported is handled by reportProblem and markAsCompleted functions
+            return { ...task, steps: updatedSteps, progress: newProgress, status: newStatus };
           }
-
-
-          const isChecked = updatedSteps.find(s => s.step_name === stepName)?.is_completed;
-          const nextProcess = getNextProcess(stepName);
-          updateActivityData(task.styleNumber, stepName, isChecked, nextProcess);
-          
-          if (newStatus === "completed") {
-            triggerNotification(`Style ${task.styleNumber} has been completed`);
-          } else if (isChecked) { // Only notify on check, not uncheck, unless it's completion
-            triggerNotification(`Process ${stepName} for ${task.styleNumber} marked as done.`);
-          }
-
-
-          fetch(`http://localhost:5000/tasks/${taskId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ steps: updatedSteps, status: newStatus, progress: newProgress }), // Send new progress too
-          }).catch(error => console.error("Error updating task:", error));
-          
-          // Note: task.ProblemReported is handled by reportProblem and markAsCompleted functions
-          return { ...task, steps: updatedSteps, progress: newProgress, status: newStatus };
-        }
-        return task;
-      })
-    );
+          return task;
+        })
+      );
+    } finally {
+      // Always reset the updating flag
+      setIsUpdating(false);
+    }
   };
 
   const updateActivityData = (styleNumber, process, isChecked, nextProcess) => {
@@ -410,8 +451,8 @@ const TaskBoard = () => {
   const formatDateTime = (dateTimeStr) => {
     if (!dateTimeStr) return '';
     const date = new Date(dateTimeStr);
-    return date.toLocaleString();
-  };
+    return date.toLocaleDateString(); // This gives date only
+    };
   
   return (
     <div className="task-board">
@@ -452,6 +493,7 @@ const TaskBoard = () => {
                           type="checkbox"
                           checked={startStep.is_completed}
                           onChange={() => handleCheckboxChange(task.id, "Start")}
+                          disabled={isUpdating} // Prevent multiple clicks
                         />
                         <span>Start</span>
                       </label>
@@ -470,7 +512,7 @@ const TaskBoard = () => {
                                 type="checkbox"
                                 checked={stepObj.is_completed}
                                 onChange={() => handleCheckboxChange(task.id, stepObj.step_name)}
-                                disabled={task.ProblemReported && stepObj.step_name !== "Problem"} // Disable other steps if problem reported
+                                disabled={isUpdating || (task.ProblemReported && stepObj.step_name !== "Problem")} // Disable other steps if problem reported or if updating
                               />
                               <span>{stepObj.step_name}</span>
                             </label>
@@ -488,8 +530,13 @@ const TaskBoard = () => {
                         placeholder="Describe the Problem to formally report it..."
                         value={task.comment || ""} // Ensure value is controlled
                         onChange={(e) => handleCommentChange(task.id, e.target.value)}
+                        disabled={isUpdating} // Prevent interaction during updates
                       />
-                      <button onClick={() => reportProblem(task.id)} className="done-button report-problem-button">
+                      <button 
+                        onClick={() => reportProblem(task.id)} 
+                        className="done-button report-problem-button"
+                        disabled={isUpdating} // Prevent multiple clicks
+                      >
                         Report Problem
                       </button>
                     </>
@@ -502,7 +549,6 @@ const TaskBoard = () => {
                         <p>{task.comment}</p>
                     </div>
                   )}
-
 
                   {status === "inProgress" && (
                     <>
@@ -521,12 +567,17 @@ const TaskBoard = () => {
                     <input
                       type="checkbox"
                       onChange={() => markAsCompleted(task.id)}
+                      disabled={isUpdating} // Prevent multiple clicks
                     />
                       <span>Problem Rectified / Mark as Completed</span>
                     </label>
                   )}
 
-                  <button className="delete-task-button" onClick={() => deleteTask(task.id)}>
+                  <button 
+                    className="delete-task-button" 
+                    onClick={() => deleteTask(task.id)}
+                    disabled={isUpdating} // Prevent deletion during updates
+                  >
                     <img src={deleteIcon} alt="Delete" width={20} height={20} />
                   </button>
                 </div>

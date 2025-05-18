@@ -19,15 +19,43 @@ h2 {
     color: inherit;
 }
 
-/* Layout */
-.fabric-trims-section {
+/* Tab Navigation */
+.tab-navigation {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e0e0e0;
 }
 
-/* Fabric and Trim Sections */
-.trim-section {
+.tab-button {
+    background: none;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    color: #a00e2c;
+}
+
+.tab-button:hover {
+    background-color: #f5f5f5;
+}
+
+.tab-button.active {
+    color: #c20e35;
+    border-bottom-color: #c20e35;
+    font-weight: bold;
+}
+
+/* Content Section */
+.content-section {
+    display: flex;
+    justify-content: center;
+}
+
+/* Items Section */
+.items-section {
     width: 100%;
     text-align: center;
 }
@@ -36,19 +64,22 @@ h2 {
 h3 {
     text-align: center;
     font-size: 20px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    color: #333;
 }
 
-/* Trims Grid */
-.trims-grid {
+/* Items Grid */
+.items-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
     justify-content: center;
+    margin-bottom: 30px;
 }
 
-/* Trim Cards */
-.trim-card {
+/* Item Cards */
+.item-card {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -56,41 +87,79 @@ h3 {
     padding: 15px;
     border-radius: 8px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
     transition: all 0.3s ease-in-out;
+    min-height: 150px;
 }
 
-.trim-card:hover {
+.item-card:hover {
     background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Remove default link styling */
+.item-link {
+    text-decoration: none !important;
+    color: inherit !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    width: 100%;
+}
+
+.item-link:hover {
+    text-decoration: none !important;
+    color: inherit !important;
 }
 
 /* Images */
-.trim-card img {
-    width: 70px;
-    height: 70px;
+.item-card img {
+    width: 80px;
+    height: 80px;
     object-fit: cover;
-    border-radius: 4px;
-    margin-bottom: 10px;
+    border-radius: 8px;
+    margin-bottom: 12px;
 }
 
-/* Trim Names */
-.trim-card p {
+/* Item Names */
+.item-card p {
     font-size: 16px;
     font-weight: bold;
     color: #333;
+    margin: 0;
+    text-align: center;
+    word-wrap: break-word;
+}
+
+/* Delete Button */
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
 }
 
 /* Add More Button */
 .add-more-btn {
-    display: block;
+    display: inline-block;
     background-color: #c20e35;
     color: white;
     border: none;
-    padding: 10px 15px;
+    padding: 12px 24px;
     cursor: pointer;
-    border-radius: 5px;
-    font-size: 14px;
-    margin: 20px auto;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 .add-more-btn:hover {
@@ -106,140 +175,30 @@ h3 {
     text-align: center;
     display: inline-block;
     font-size: 14px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.back-button:hover {
-    background-color: #a00e2c;
-}
-
-/* 🔹 Delete Button for Categories */
-.delete-icon, .delete-btn {
-    width: 55px;
-    height: 35px;
-    cursor: pointer;
-    margin-left: 5px;
-    text-align: center;
-}
-
-
-/* Container 
-.fabric-trims-container {
-    width: 80%;
-    margin: auto;
-    padding: 20px;
-    text-decoration: none !important;
-    color: inherit !important;
-    border: none !important;
-    outline: none !important;
-}
-
-/* Section Title 
-h2 {
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
     margin-bottom: 20px;
-    text-decoration: none;
-    color: inherit;
-}
-
-/* Layout 
-.fabric-trims-section {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-/* Fabric and Trim Sections 
-.fabric-section, .trim-section {
-    width: 48%;
-    text-decoration: none !important;
-    color: inherit !important;
-    border: none !important;
-    outline: none !important;
-}
-
-/* Section Headings 
-h3 {
-    text-align: center;
-    font-size: 20px;
-    margin-bottom: 15px;
-    
-}
-
-/* Fabric & Trim Cards 
-.fabric-card, .trim-card {
-    position: relative;
-    display: flex;
-    align-items: center;
-    background-color: #f9f9f9;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-}
-
-.fabric-card:hover, .trim-card:hover {
-    background-color: #f0f0f0;
-    text-decoration: none !important; /* Force removal 
-    color: inherit !important;
-}
-
-/* Images 
-.fabric-card img, .trim-card img {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 4px;
-    margin-right: 15px;
-}
-
-/* Fabric & Trim Names 
-.fabric-card p, .trim-card p {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-}
-
-/* Add More Button 
-.add-more-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #c20e35;
-    color: white;
-    border: none;
-    padding: 10px 15px;
     cursor: pointer;
     border-radius: 5px;
-    font-size: 14px;
-    margin-top: 15px;
-    width: 100%;
-}
-
-.add-more-btn:hover {
-    background-color: #a00e2c;
-}
-/* Back Button 
-.back-button {
-    background-color: #c20e35;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 14px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
 .back-button:hover {
     background-color: #a00e2c;
-}*/
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .fabric-trims-container {
+        width: 95%;
+        padding: 15px;
+    }
+    
+    .items-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+    
+    .tab-button {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+}

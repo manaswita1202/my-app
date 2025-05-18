@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Chatbot.css"; // Import the CSS file
+import { MessageSquareCodeIcon } from "lucide-react";
 
 const Chatbot = () => {
     const [messages, setMessages] = useState([
@@ -40,7 +41,6 @@ const Chatbot = () => {
 
     return (
         <div className="chatbot-container">
-            <h1 className="chatbot-header">Chatbot</h1>
 
             <div ref={chatRef} className="chatbox">
                 {messages.map((msg, index) => (
@@ -51,6 +51,7 @@ const Chatbot = () => {
             </div>
 
             <div className="chat-input-container">
+                <div>
                 <input
                     type="text"
                     value={input}
@@ -60,7 +61,10 @@ const Chatbot = () => {
                     onKeyDown={(e) => e.key 
                          === "Enter" && sendMessage()}
                 />
-                <button onClick={sendMessage} className="send-button">Send</button>
+                </div>
+                <button onClick={sendMessage} className="send-button">
+                    <MessageSquareCodeIcon />
+                </button>
             </div>
         </div>
     );

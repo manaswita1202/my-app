@@ -80,7 +80,6 @@ const Layout = () => {
               setActiveStyleIndex 
             }} 
           />
-          <Chatbot />
         </div>
       </div>
     </div>

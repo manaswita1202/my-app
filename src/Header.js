@@ -1,15 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Bell, ChevronDown, LogOut, User, X } from "lucide-react";
+import { Bell, ChevronDown, LogOut, User, X, MessageCircle } from "lucide-react";
 import "./Header.css";
 import samplifylogo from "./assets/samplifylogo.png";
+import Chatbot from "./Chatbot"; // Assuming you have a ChatBot component
 
 const Header = () => {
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false);
+  const [chatBotOpen, setChatBotOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
   const userDropdownRef = useRef(null);
   const notificationDropdownRef = useRef(null);
+  const chatBotRef = useRef(null);
 
   // ✅ Fetch notifications from API
   useEffect(() => {
@@ -42,14 +45,34 @@ const Header = () => {
     }
   };
 
+  // ✅ Clear All Notifications
+  const clearAllNotifications = async () => {
+    try {
+      await fetch(`http://localhost:5000/api/notifications/clear-all`, {
+        method: "DELETE",
+      });
+      setNotifications([]);
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+    }
+  };
+
   const toggleUserDropdown = () => {
     setUserDropdownOpen(!userDropdownOpen);
     if (notificationDropdownOpen) setNotificationDropdownOpen(false);
+    if (chatBotOpen) setChatBotOpen(false);
   };
 
   const toggleNotificationDropdown = () => {
     setNotificationDropdownOpen(!notificationDropdownOpen);
     if (userDropdownOpen) setUserDropdownOpen(false);
+    if (chatBotOpen) setChatBotOpen(false);
+  };
+
+  const toggleChatBot = () => {
+    setChatBotOpen(!chatBotOpen);
+    if (userDropdownOpen) setUserDropdownOpen(false);
+    if (notificationDropdownOpen) setNotificationDropdownOpen(false);
   };
 
   const handleLogout = () => {
@@ -64,6 +87,9 @@ const Header = () => {
       if (notificationDropdownRef.current && !notificationDropdownRef.current.contains(event.target)) {
         setNotificationDropdownOpen(false);
       }
+      if (chatBotRef.current && !chatBotRef.current.contains(event.target)) {
+        setChatBotOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -77,6 +103,28 @@ const Header = () => {
       <img src={samplifylogo} alt="Samplify Logo" className="arvind-logo" />
 
       <div className="header-right">
+        {/* ChatBot Container */}
+        <div className="chatbot-container" ref={chatBotRef}>
+          <div onClick={toggleChatBot}>
+            <MessageCircle className="icon chatbot-icon" />
+          </div>
+
+          {chatBotOpen && (
+            <div className="chatbot-dropdown">
+              <div className="chatbot-header">
+                <h3>AI Assistant</h3>
+                {/* <button className="chatbot-close" onClick={() => setChatBotOpen(false)}>
+                  <X className="close-icon" />
+                </button> */}
+              </div>
+              <div className="chatbot-content">
+                <Chatbot />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Notification Container */}
         <div className="notification-container" ref={notificationDropdownRef}>
           <div onClick={toggleNotificationDropdown}>
             <Bell className="icon notification-icon" />
@@ -103,6 +151,9 @@ const Header = () => {
                       </button>
                     </div>
                   ))}
+                  <button className="clear-all-btn" onClick={() => clearAllNotifications()}>
+                    Clear All
+                  </button>
                 </div>
               ) : (
                 <div className="empty-notifications">
@@ -113,6 +164,7 @@ const Header = () => {
           )}
         </div>
 
+        {/* User Dropdown */}
         <div className="user-dropdown" ref={userDropdownRef}>
           <div className="user-info" onClick={toggleUserDropdown}>
             <div className="avatar">

@@ -18,7 +18,7 @@ const BOMPage = () =>{
     key: "1",
       styleNo: "",
       trims: "",
-      trimDescription: "",
+      description: "",
       color: "",
       size: "",
       uom: "",
@@ -83,7 +83,7 @@ useEffect(() => {
         size: fabric.size, // Default value
         uom: "", // Default value
         consumption: 0, // Default value
-        supplier: "", // Default value
+        supplier: fabric.supplier, // Default value
       }));
 
       setFabricData(updatedFabricData);
@@ -95,12 +95,12 @@ useEffect(() => {
         key: String(index + 1),
         styleNo: trim.code || "",
         trims: trim.trim || "",
-        trimDescription: trim.descirption || "",
+        description: trim.description || "",
         color: trim.color, // Default value
         size: trim.size, // Default value
         uom: "", // Default value
         quantity: trim.quantity, // Default value
-        supplier: "", // Default value
+        supplier: trim.supplier, // Default value
       }));
       console.log(updatedTrimsData)
 
@@ -150,7 +150,7 @@ useEffect(() => {
         key: String(trimsData.length + 1),
         styleNo: "",
         trims: "",
-        trimDescription: "",
+        description: "",
         color: "",
         size: "",
         uom: "",
@@ -203,7 +203,7 @@ useEffect(() => {
         index + 1,
         row.styleNo,
         row.trims,
-        row.trimDescription,
+        row.description,
         row.color,
         row.size,
         row.uom,
@@ -361,13 +361,13 @@ useEffect(() => {
     },
     {
       title: "Trim Description",
-      dataIndex: "trimDescription",
-      key: "trimDescription",
+      dataIndex: "description",
+      key: "description",
       render: (text, record) => (
         <Input
           value={text}
           onChange={(e) =>
-            handleTableChange(record.key, "trimDescription", e.target.value, "trim")
+            handleTableChange(record.key, "description", e.target.value, "trim")
           }
         />        
       ),

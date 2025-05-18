@@ -5,22 +5,75 @@ import "./FabricAndTrims.css";
 import others from "./assets/others.png"; // Default image
 
 const FabricAndTrims = () => {
+  const [fabrics, setFabrics] = useState([]);
   const [trims, setTrims] = useState([]);
+  const [activeTab, setActiveTab] = useState("fabrics");
   const navigate = useNavigate();
 
-  // Fetch trims from API
+  // Fetch fabrics and trims from API
   useEffect(() => {
-    const fetchTrims = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/api/trims");
-        const data = await response.json();
-        setTrims(data);
-      } catch (error) {
-        console.error("Error fetching trims:", error);
-      }
-    };
+    fetchFabrics();
     fetchTrims();
   }, []);
+
+  const fetchFabrics = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/fabrics");
+      const data = await response.json();
+      setFabrics(data);
+    } catch (error) {
+      console.error("Error fetching fabrics:", error);
+    }
+  };
+
+  const fetchTrims = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/trims");
+      const data = await response.json();
+      setTrims(data);
+    } catch (error) {
+      console.error("Error fetching trims:", error);
+    }
+  };
+
+  // Add new fabric
+  const addMoreFabric = async () => {
+    const newFabric = prompt("Enter the Fabric:");
+    if (newFabric && !fabrics.some((fabric) => fabric.name === newFabric)) {
+      const fabricData = { name: newFabric, image: others };
+
+      try {
+        const response = await fetch("http://localhost:5000/api/fabrics", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(fabricData),
+        });
+
+        if (response.ok) {
+          setFabrics([...fabrics, fabricData]); // Update UI
+        }
+      } catch (error) {
+        console.error("Error adding fabric:", error);
+      }
+    }
+  };
+
+  // Delete fabric
+  const deleteFabric = async (fabricName) => {
+    if (!window.confirm(`Are you sure you want to delete ${fabricName}?`)) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/fabrics/${fabricName}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setFabrics(fabrics.filter((fabric) => fabric.name !== fabricName));
+      }
+    } catch (error) {
+      console.error("Error deleting fabric:", error);
+    }
+  };
 
   // Add new trim
   const addMoreTrim = async () => {
@@ -46,6 +99,8 @@ const FabricAndTrims = () => {
 
   // Delete trim
   const deleteTrim = async (trimName) => {
+    if (!window.confirm(`Are you sure you want to delete ${trimName}?`)) return;
+
     try {
       const response = await fetch(`http://localhost:5000/api/trims/${trimName}`, {
         method: "DELETE",
@@ -61,24 +116,79 @@ const FabricAndTrims = () => {
 
   return (
     <div className="fabric-trims-container">
-      <h2>Trims</h2>
-      <button className="back-button" onClick={() => navigate("/dashboard")}>Back</button>
-      <div className="fabric-trims-section">
-        <div className="trim-section">
-          <h3>Trims</h3>
-          <div className="trims-grid">
-            {trims.map((trim) => (
-              <div key={trim.name} className="trim-card">
-                <Link to={`/dashboard/trim/${trim.name}`}>
-                  <img src={trim.image || others} alt={trim.name} />
-                  <p>{trim.name}</p>
-                </Link>
-                <button className="delete-btn" onClick={() => deleteTrim(trim.name)}>Delete</button>
-              </div>
-            ))}
+      <h2>Fabrics & Trims</h2>
+      {/* <button className="back-button" onClick={() => navigate("/dashboard")}>
+        Back
+      </button> */}
+
+      {/* Tab Navigation */}
+      <div className="tab-navigation">
+        <button 
+          className={`tab-button ${activeTab === "fabrics" ? "active" : ""}`}
+          onClick={() => setActiveTab("fabrics")}
+        >
+          Fabrics
+        </button>
+        <button 
+          className={`tab-button ${activeTab === "trims" ? "active" : ""}`}
+          onClick={() => setActiveTab("trims")}
+        >
+          Trims
+        </button>
+      </div>
+
+      <div className="content-section">
+        {/* Fabrics Section */}
+        {activeTab === "fabrics" && (
+          <div className="items-section">
+            <h3>Fabrics</h3>
+            <div className="items-grid">
+              {fabrics.map((fabric) => (
+                <div key={fabric.name} className="item-card">
+                  <Link to={`/dashboard/fabric/${fabric.name}`} className="item-link">
+                    <img src={fabric.image || others} alt={fabric.name} />
+                    <p>{fabric.name}</p>
+                  </Link>
+                  <button 
+                    className="delete-btn" 
+                    onClick={() => deleteFabric(fabric.name)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button className="add-more-btn" onClick={addMoreFabric}>
+              + Add More Fabrics
+            </button>
           </div>
-          <button className="add-more-btn" onClick={addMoreTrim}>+ Add More</button>
-        </div>
+        )}
+
+        {/* Trims Section */}
+        {activeTab === "trims" && (
+          <div className="items-section">
+            <h3>Trims</h3>
+            <div className="items-grid">
+              {trims.map((trim) => (
+                <div key={trim.name} className="item-card">
+                  <Link to={`/dashboard/trim/${trim.name}`} className="item-link">
+                    <img src={trim.image || others} alt={trim.name} />
+                    <p>{trim.name}</p>
+                  </Link>
+                  <button 
+                    className="delete-btn" 
+                    onClick={() => deleteTrim(trim.name)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button className="add-more-btn" onClick={addMoreTrim}>
+              + Add More Trims
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

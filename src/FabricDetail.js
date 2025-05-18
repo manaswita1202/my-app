@@ -1,62 +1,197 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import "./FabricDetail.css";
-import fabricData from "./fabricData"; // A separate data file for fabric details
 
 const FabricDetail = () => {
-  const navigate = useNavigate();
-  const currentPath = window.location.pathname;
-  const currentFabric = currentPath.split("/").pop();
-  // Load fabrics from localStorage or fallback to initial fabricData
-  const [fabrics, setFabrics] = useState(() => {
-    
-    const savedFabrics = localStorage.getItem(currentFabric);
-    return savedFabrics ? JSON.parse(savedFabrics) : [];
+  const { fabricName } = useParams();
+  const [fabric, setFabric] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [brandFilter, setBrandFilter] = useState("All");
+  const [newFabric, setNewFabric] = useState({
+    image: "",
+    composition: "",  
+    structure: "",
+    shade: "",
+    brand: "",
+    code: "",
+    rate: "",
+    supplier : ""
   });
 
-  // Save updates to localStorage whenever fabrics state changes
   useEffect(() => {
-    localStorage.setItem(currentFabric  , JSON.stringify(fabrics));
-  }, [fabrics]);
+    fetchFabricDetail();
+  }, [fabricName]);
 
-  // Function to add a new fabric
-  const addMoreFabric = () => {
-    const name = prompt("Enter Fabric Name:");
-    if (!name) return;
-
-    const image = prompt("Enter Fabric Image URL (or leave blank):") || "";
-    const composition = prompt("Enter Fabric Composition:");
-    const structure = prompt("Enter Fabric Structure:");
-    const shade = prompt("Enter Fabric Shade:");
-    const brand = prompt("Enter Fabric Brand:");
-
-    const newFabric = { name, image, composition, structure, shade, brand };
-    const updatedFabrics = [...fabrics, newFabric];
-
-    setFabrics(updatedFabrics);
-    localStorage.setItem("fabrics", JSON.stringify(updatedFabrics));
+  const fetchFabricDetail = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/fabrics/${fabricName}`);
+      if (!response.ok) throw new Error("Fabric not found");
+      const data = await response.json();
+      setFabric(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleInputChange = (e) => {
+    setNewFabric({ ...newFabric, [e.target.name]: e.target.value });
+  };
+
+  const handleAddVariant = async () => {
+    if (!fabric) return;
+
+    const response = await fetch(`http://localhost:5000/api/fabrics/${fabric.id}/variants`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newFabric)
+    });
+
+    if (response.ok) {
+      fetchFabricDetail();
+      setShowModal(false);
+      setNewFabric({ image: "", composition: "", structure: "", shade: "", brand: "", code: "", rate: "", supplier : "" });
+    } else {
+      alert("Error adding variant");
+    }
+  };
+
+  const handleDeleteVariant = async (variantId) => {
+    if (!window.confirm("Are you sure you want to delete this variant?")) return;
+  
+    try {
+      const response = await fetch(`http://localhost:5000/api/fabric-variants/${variantId}`, {
+        method: "DELETE",
+      });
+  
+      if (response.ok) {
+        fetchFabricDetail(); // Refresh after delete
+      } else {
+        alert("Failed to delete the variant.");
+      }
+    } catch (error) {
+      console.error("Error deleting variant:", error);
+      alert("An error occurred while deleting.");
+    }
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+  if (!fabric) return <p>Fabric not found</p>;
 
   return (
     <div className="detail-container">
-      <h2>Fabric List</h2>
-      <div className="fabric-list">
-        {fabrics.map((fabric, index) => (
-          <div key={index} className="detail-card">
-            <img src={fabric.image} alt={fabric.name} />
-            <div className="detail-info">
-              <h3>{fabric.name}</h3>
-              <p><strong>Composition:</strong> {fabric.composition}</p>
-              <p><strong>Structure:</strong> {fabric.structure}</p>
-              <p><strong>Shade:</strong> {fabric.shade}</p>
-              <p><strong>Brand:</strong> {fabric.brand}</p>
+      <h2>{fabric.name}</h2>
+      <div style={{ marginBottom: "1rem" }}>
+        <label htmlFor="brandFilter"><strong>Filter by Brand: </strong></label>
+        <select
+          id="brandFilter"
+          value={brandFilter}
+          onChange={(e) => setBrandFilter(e.target.value)}
+        >
+          <option value="All">All</option>
+          <option value="Hugo Boss">Hugo Boss</option>
+          <option value="River Island">River Island</option>
+          <option value="US Polo">US Polo</option>
+        </select>
+      </div>
+      <button onClick={() => {
+        setNewFabric({ ...newFabric, brand: brandFilter !== "All" ? brandFilter : "" });
+        setShowModal(true);
+      }} className="add-btn">
+        Add Fabric Variant
+      </button>
+
+      <div className="variant-list">
+        {fabric.variants.filter(variant => brandFilter === "All" || variant.brand === brandFilter)
+        .map((variant, index) => (
+          <div key={index} className="variant-card">
+            <div className="delete-icon" onClick={() => handleDeleteVariant(variant.id)}>
+              🗑️
+            </div>
+            <img src={`/assets/${variant.image}`} alt={fabric.name} />
+            <div className="variant-info">
+              <p><strong>Composition:</strong> {variant.composition}</p>
+              <p><strong>Structure:</strong> {variant.structure}</p>
+              <p><strong>Shade:</strong> {variant.shade}</p>
+              <p><strong>Brand:</strong> {variant.brand}</p>
+              <p><strong>Code:</strong> {variant.code}</p>
+              <p><strong>Rate:</strong> {variant.rate}</p>
+              <p><strong>Supplier:</strong> {variant.supplier}</p>
             </div>
           </div>
         ))}
       </div>
-      <button className="add-more-btn" onClick={addMoreFabric}>
-        + Add More
-      </button>
+
+      {/* Modal for Adding a Variant */}
+      {showModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <h3>Add Fabric Variant</h3>
+            <input 
+              type="text" 
+              name="image" 
+              placeholder="Image Name" 
+              value={newFabric.image} 
+              onChange={handleInputChange} 
+            />
+            <input 
+              type="text" 
+              name="composition" 
+              placeholder="Composition" 
+              value={newFabric.composition} 
+              onChange={handleInputChange} 
+            />
+            <input 
+              type="text" 
+              name="structure" 
+              placeholder="Structure " 
+              value={newFabric.structure} 
+              onChange={handleInputChange} 
+            />
+            <input 
+              type="text" 
+              name="shade" 
+              placeholder="Shade" 
+              value={newFabric.shade} 
+              onChange={handleInputChange} 
+            />
+            <input 
+              type="text" 
+              name="brand" 
+              placeholder="Brand" 
+              value={newFabric.brand} 
+              onChange={handleInputChange} 
+            />
+            <input 
+              type="text" 
+              name="code" 
+              placeholder="Code" 
+              value={newFabric.code} 
+              onChange={handleInputChange} 
+            />
+            <input 
+              type="text" 
+              name="rate" 
+              placeholder="Rate" 
+              value={newFabric.rate} 
+              onChange={handleInputChange} 
+            />
+            <input 
+              type="text" 
+              name="supplier" 
+              placeholder="Supplier" 
+              value={newFabric.supplier} 
+              onChange={handleInputChange} 
+            />
+            <button onClick={handleAddVariant} className="save-btn">Save</button>
+            <button onClick={() => setShowModal(false)} className="cancel-btn">Cancel</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

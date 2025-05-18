@@ -92,7 +92,7 @@ const TrimDetail = () => {
   >
     <option value="All">All</option>
     <option value="Hugo Boss">Hugo Boss</option>
-    <option value="Arrow">Arrow</option>
+    <option value="Arrow">River Island</option>
     <option value="US Polo">US Polo</option>
   </select>
 </div>

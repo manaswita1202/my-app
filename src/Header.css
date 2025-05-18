@@ -1,215 +1,289 @@
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 75px;
-    padding: 0 20px;
-    background-color: #ffffff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .logo {
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-    letter-spacing: 1px;
-  }
-  
-  .header-right {
-    display: flex;
-    align-items: center;
-  }
-  
-  .icon {
-    width: 20px;
-    height: 20px;
-    color: #555;
-    cursor: pointer;
-  }
-  
-  /* Notification styles */
-  .notification-container {
-    position: relative;
-    margin-right: 20px;
-  }
-  
-  .notification-icon:hover {
-    color: #333;
-  }
-  
-  .notification-badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    background-color: #ff4757;
-    color: white;
-    font-size: 12px;
-    border-radius: 50%;
-  }
-  
-  .notification-dropdown {
-    position: absolute;
-    top: 45px;
-    right: -80px;
-    width: 300px;
-    max-height: 400px;
-    background-color: #fff;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-    overflow: hidden;
-  }
-  
-  .notification-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .notification-header h3 {
-    margin: 0;
-    font-size: 16px;
-    color: #333;
-  }
-  
-  .notification-list {
-    max-height: 350px;
-    overflow-y: auto;
-  }
-  
-  .notification-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid #f1f1f1;
-  }
-  
-  .notification-item:hover {
-    background-color: #f8f8f8;
-  }
-  
-  .notification-content {
-    flex: 1;
-  }
-  
-  .notification-text {
-    margin: 0 0 4px 0;
-    font-size: 14px;
-    color: #333;
-  }
-  
-  .notification-time {
-    font-size: 12px;
-    color: #888;
-  }
-  
-  .notification-dismiss {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .dismiss-icon {
-    width: 16px;
-    height: 16px;
-    color: #aaa;
-  }
-  
-  .dismiss-icon:hover {
-    color: #ff4757;
-  }
-  
-  .empty-notifications {
-    padding: 16px;
-    text-align: center;
-    color: #888;
-  }
-  
-  /* User dropdown styles */
-  .user-dropdown {
-    position: relative;
-  }
-  
-  .user-info {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
-  
-  .avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background-color: #f1f1f1;
-    border-radius: 50%;
-    margin-right: 5px;
-  }
-  
-  .avatar-icon {
-    width: 18px;
-    height: 18px;
-    color: #555;
-  }
-  
-  .dropdown-icon {
-    width: 16px;
-    height: 16px;
-    color: #555;
-  }
-  
-  .dropdown-menu {
-    position: absolute;
-    top: 45px;
-    right: 0;
-    width: 180px;
-    background-color: #fff;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-  }
-  
-  .dropdown-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    cursor: pointer;
-  }
-  
-  .dropdown-item:hover {
-    background-color: #f8f8f8;
-  }
-  
-  .dropdown-item-icon {
-    width: 16px;
-    height: 16px;
-    margin-right: 10px;
-    color: #555;
-  }
-  
-  .dropdown-item.logout {
-    color: #ff4757;
-    border-top: 1px solid #eee;
-  }
-  
-  .dropdown-item.logout .dropdown-item-icon {
-    color: #ff4757;
-  }
-  .arvind-logo {
-    max-width: 80%; /* Adjust width relative to the sidebar */
-    max-height: 60px; /* Adjust as needed */
-    object-fit: contain; /* Ensures it fits properly */
-    display: block;
-    margin: auto;
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 75px;
+  padding: 0 20px;
+  position: relative;
+  z-index: 10;
+  overflow: visible;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  letter-spacing: 1px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  color: #555;
+  cursor: pointer;
+}
+
+/* ChatBot Dropdown Styles */
+.chatbot-container {
+  position: relative;
+  margin-right: 20px;
+}
+
+.chatbot-icon {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.chatbot-icon:hover {
+  color: #333;
+}
+
+.chatbot-dropdown {
+  position: absolute;
+  top: 45px;
+  right: 10px;
+  width: 380px;
+  max-height: 550px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  overflow: visible;
+}
+
+.chatbot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  margin-left: 8rem;
+}
+
+.chatbot-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  margin-left: 8.5rem;
+
+}
+
+.chatbot-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-icon {
+  width: 16px;
+  height: 16px;
+  color: #aaa;
+}
+
+.close-icon:hover {
+  color: #ff4757;
+}
+
+.chatbot-content {
+  height: 480px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Notification styles */
+.notification-container {
+  position: relative;
+  margin-right: 20px;
+}
+
+.notification-icon:hover {
+  color: #333;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background-color: #ff4757;
+  color: white;
+  font-size: 12px;
+  border-radius: 50%;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: 45px;
+  right: 10px;
+  width: 300px;
+  max-height: 400px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  overflow: visible;
+}
+
+.notification-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.notification-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.notification-list {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.notification-item:hover {
+  background-color: #f8f8f8;
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-text {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: #888;
+}
+
+.notification-dismiss {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dismiss-icon {
+  width: 16px;
+  height: 16px;
+  color: #aaa;
+}
+
+.dismiss-icon:hover {
+  color: #ff4757;
+}
+
+.empty-notifications {
+  padding: 16px;
+  text-align: center;
+  color: #888;
+}
+
+/* User dropdown styles */
+.user-dropdown {
+  position: relative;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: #f1f1f1;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.avatar-icon {
+  width: 18px;
+  height: 18px;
+  color: #555;
+}
+
+.dropdown-icon {
+  width: 16px;
+  height: 16px;
+  color: #555;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  width: 180px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f8f8;
+}
+
+.dropdown-item-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 10px;
+  color: #555;
+}
+
+.dropdown-item.logout {
+  color: #ff4757;
+  border-top: 1px solid #eee;
+}
+
+.dropdown-item.logout .dropdown-item-icon {
+  color: #ff4757;
+}
+
+.arvind-logo {
+  max-width: 80%;
+  max-height: 60px;
+  object-fit: contain;
+  display: block;
+  margin: auto;
+}

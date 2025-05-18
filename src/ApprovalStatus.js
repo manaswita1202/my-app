@@ -3,7 +3,7 @@ import "./ApprovalStatus.css";
 import LabDips from "./LabDips";
 
 const SampleApprovalDashboard = () => {
-    const [samples, setSamples] = useState({ received: [], pending: [], yetToSend: [] });
+    const [samples, setSamples] = useState({ received: [], pending: [], yetToSend: [], rejected : [] });
 
     // Fetch samples from backend
     useEffect(() => {
@@ -61,6 +61,10 @@ const SampleApprovalDashboard = () => {
             {category === "yetToSend" && (
               <button className="send" onClick={() => moveSample(sample.id, "yetToSend", "pending", "sample")}>Send for Approval 📤</button>
             )}
+                {category === "pending" && (
+              <button className="approve" onClick={() => moveSample(sample.id, "pending", "rejected", "sample")}>Reject ❌</button>
+            )}
+
           </div>
         </div>
       ))}
@@ -75,6 +79,7 @@ const SampleApprovalDashboard = () => {
         {renderSamples("received", "Approvals Received", "received")}
         {renderSamples("pending", "Pending Approvals", "pending")}
         {renderSamples("yetToSend", "Yet to be Sent", "yetToSend")}
+        {renderSamples("rejected", "Rejected", "rejected")}
       </div>
       <LabDips />
       </div>

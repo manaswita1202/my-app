@@ -22,6 +22,7 @@ import CostSheet from "./CostSheet";
 import ApprovalStatus from "./ApprovalStatus";
 import ViewFiles from "./StyleDocuments";
 import ImageAnnotator from "./ImageAnnotation";
+import InspirationForm from "./InspirationForm";
 
 function App() {
 
@@ -53,6 +54,7 @@ function App() {
           <Route path="order-creation" element={<HomePage />} />
           <Route path="style-documents" element={<ViewFiles />} /> {/* Default Home Page */}
           <Route path="imageannotator" element={<ImageAnnotator/>} />
+          <Route path="inspirationform" element={<InspirationForm/>} />
 
         </Route>      
         </Routes>

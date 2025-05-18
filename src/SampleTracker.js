@@ -1,118 +1,203 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './SampleTracker.css';
 
-const GARMENT_TYPES = ['Shirt', 'T-Shirt', 'Shorts', 'Trousers'];
-const SAMPLE_TYPES = ['Fit Sample', 'PP Sample', 'SMS', 'Photoshoot Sample', 'TOP Sample', 'FOB Sample'];
+// const GARMENT_TYPES = ['Shirt', 'T-Shirt', 'Shorts', 'Trousers']; // Keep for form or fetch if dynamic
+// const SAMPLE_TYPES = [...] // This will be fetched from backend
+
+const API_BASE_URL = 'http://localhost:5000/api/sample-tracker'; // Adjust port if your Flask runs elsewhere
 
 function SampleTracker() {
   const [styles, setStyles] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
-  const [newSampleType, setNewSampleType] = useState("");
+  const [newSampleTypePerStyle, setNewSampleTypePerStyle] = useState({}); // To hold input for new sample type for each style card
+
+  const [availableGarmentTypes] = useState(['Shirt', 'T-Shirt', 'Shorts', 'Trousers']); // Static for now, can be fetched
+  const [initialSampleTypes, setInitialSampleTypes] = useState([]); // For knowing what samples are default
 
   const [newStyle, setNewStyle] = useState({
     styleNumber: '',
     brand: '',
     garmentType: ''
   });
-  const deleteSample = (styleId, sampleIndex) => {
-    setStyles(styles.map(style => {
-      if (style.id !== styleId) return style;
-  
-      const newSamples = style.samples.filter((_, index) => index !== sampleIndex);
-  
-      return {
-        ...style,
-        samples: newSamples
-      };
-    }));
+
+  // --- Helper to parse dates from server ---
+  const parseStyleDates = (styleFromServer) => {
+    return {
+      ...styleFromServer,
+      startDate: styleFromServer.startDate ? new Date(styleFromServer.startDate) : null,
+      endDate: styleFromServer.endDate ? new Date(styleFromServer.endDate) : null,
+      samples: styleFromServer.samples.map(s => ({
+        ...s,
+        startDate: s.startDate ? new Date(s.startDate) : null,
+        endDate: s.endDate ? new Date(s.endDate) : null,
+      }))
+    };
   };
-  const addSample = (styleId, sampleType) => {
-    if (!sampleType) {
+
+  // --- Fetching Data ---
+  const fetchAllStyles = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/styles`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setStyles(data.map(parseStyleDates));
+    } catch (error) {
+      console.error("Failed to fetch styles:", error);
+      alert("Error fetching styles. Please try again later.");
+    }
+  }, []);
+
+  const fetchInitialSampleTypes = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/sample-types`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setInitialSampleTypes(data);
+    } catch (error) {
+      console.error("Failed to fetch initial sample types:", error);
+      // Fallback if needed, though backend should provide this
+      setInitialSampleTypes(['Fit Sample', 'PP Sample', 'SMS', 'Photoshoot Sample', 'TOP Sample', 'FOB Sample']);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAllStyles();
+    fetchInitialSampleTypes();
+  }, [fetchAllStyles, fetchInitialSampleTypes]);
+
+  // --- CRUD Operations ---
+
+  const handleAddNewStyle = async () => {
+    if (!newStyle.styleNumber || !newStyle.brand || !newStyle.garmentType) {
+      alert('Please fill all fields for the new style.');
+      return;
+    }
+    try {
+      const response = await fetch(`${API_BASE_URL}/styles`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newStyle),
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || `HTTP error! status: ${response.status}`);
+      }
+      const addedStyleFromServer = await response.json();
+      setStyles(prevStyles => [parseStyleDates(addedStyleFromServer), ...prevStyles]); // Add to top
+      setNewStyle({ styleNumber: '', brand: '', garmentType: '' }); // Reset form
+      setShowDialog(false);
+    } catch (error) {
+      console.error("Failed to add new style:", error);
+      alert(`Error adding style: ${error.message}`);
+    }
+  };
+
+  const handleDeleteStyle = async (styleId) => {
+    if (window.confirm('Are you sure you want to delete this entire style and all its samples?')) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/styles/${styleId}`, {
+          method: 'DELETE',
+        });
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.error || `HTTP error! status: ${response.status}`);
+        }
+        setStyles(styles.filter(style => style.id !== styleId));
+      } catch (error) {
+        console.error("Failed to delete style:", error);
+        alert(`Error deleting style: ${error.message}`);
+      }
+    }
+  };
+
+  const handleAddSample = async (styleId, sampleType) => {
+    if (!sampleType || !sampleType.trim()) {
       alert("Please enter a valid sample type.");
       return;
     }
-  
-    setStyles(styles.map(style => {
-      if (style.id !== styleId) return style;
-  
-      const newSample = {
-        type: sampleType,
-        completed: false,
-        startDate: null,
-        endDate: null
-      };
-  
-      return {
-        ...style,
-        samples: [...style.samples, newSample]
-      };
-    }));
-  };
-  
-
-
-  const addNewStyle = () => {
-    if (!newStyle.styleNumber || !newStyle.brand || !newStyle.garmentType) {
-      alert('Please fill all fields');
-      return;
-    }    
-
-    const style = {
-      ...newStyle,
-      id: Date.now(),
-      startDate: new Date(),
-      samples: SAMPLE_TYPES.map(type => ({
-        type,
-        completed: false,
-        startDate: null,
-        endDate: null
-      })),
-      endDate: null
-    };
-
-    setStyles([...styles, style]);
-    setNewStyle({ styleNumber: '', brand: '', garmentType: '' });
-    setShowDialog(false);
+    try {
+      const response = await fetch(`${API_BASE_URL}/styles/${styleId}/samples`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: sampleType.trim() }),
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || `HTTP error! status: ${response.status}`);
+      }
+      const updatedStyleFromServer = await response.json();
+      setStyles(styles.map(s => s.id === styleId ? parseStyleDates(updatedStyleFromServer) : s));
+      setNewSampleTypePerStyle(prev => ({ ...prev, [styleId]: "" })); // Clear input for this style
+    } catch (error) {
+      console.error("Failed to add sample:", error);
+      alert(`Error adding sample: ${error.message}`);
+    }
   };
 
-  const toggleSample = (styleId, sampleIndex) => {
-    setStyles(styles.map(style => {
-      if (style.id !== styleId) return style;
-
-      const newSamples = [...style.samples];
-      newSamples[sampleIndex] = {
-        ...newSamples[sampleIndex],
-        completed: !newSamples[sampleIndex].completed,
-        startDate: newSamples[sampleIndex].startDate || new Date(),
-        endDate: !newSamples[sampleIndex].completed ? new Date() : null
-      };
-
-      const allCompleted = newSamples.every(sample => sample.completed);
-      return {
-        ...style,
-        endDate: allCompleted ? new Date() : null,
-        samples: newSamples
-      };
-    }));
+  const handleDeleteSample = async (styleId, sampleId) => {
+    if (window.confirm('Are you sure you want to delete this sample?')) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/styles/${styleId}/samples/${sampleId}`, {
+          method: 'DELETE',
+        });
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.error || `HTTP error! status: ${response.status}`);
+        }
+        const updatedStyleFromServer = await response.json();
+        setStyles(styles.map(s => s.id === styleId ? parseStyleDates(updatedStyleFromServer) : s));
+      } catch (error) {
+        console.error("Failed to delete sample:", error);
+        alert(`Error deleting sample: ${error.message}`);
+      }
+    }
   };
 
-  // ✅ Define getProgressWidth function properly
+  const handleToggleSample = async (styleId, sampleId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/styles/${styleId}/samples/${sampleId}/toggle`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' }, // Good practice, though no body here
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || `HTTP error! status: ${response.status}`);
+      }
+      const updatedStyleFromServer = await response.json();
+      setStyles(styles.map(s => s.id === styleId ? parseStyleDates(updatedStyleFromServer) : s));
+    } catch (error) {
+      console.error("Failed to toggle sample:", error);
+      alert(`Error updating sample: ${error.message}`);
+    }
+  };
+
+
+  // --- Utility Functions ---
   const getProgressWidth = (samples) => {
-    if (!samples.length) return '0%';
+    if (!samples || samples.length === 0) return '0%';
     const completedCount = samples.filter(s => s.completed).length;
     return `${(completedCount / samples.length) * 100}%`;
   };
 
-  const deleteStyle = (styleId) => {
-    if (window.confirm('Are you sure you want to delete this style?')) {
-      setStyles(styles.filter(style => style.id !== styleId));
-    }
-  };
-
   const calculateDays = (startDate, endDate) => {
     if (!startDate || !endDate) return 0;
-    const diff = new Date(endDate) - new Date(startDate);
-    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+    // Ensure dates are Date objects
+    const start = startDate instanceof Date ? startDate : new Date(startDate);
+    const end = endDate instanceof Date ? endDate : new Date(endDate);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) return 0; // Invalid date
+
+    const diff = end.getTime() - start.getTime();
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return days < 0 ? 0 : days; // Avoid negative days if end < start due to some issue
+  };
+
+  const handleSampleTypeInputChange = (styleId, value) => {
+    setNewSampleTypePerStyle(prev => ({ ...prev, [styleId]: value }));
   };
 
   return (
@@ -144,13 +229,13 @@ function SampleTracker() {
               onChange={(e) => setNewStyle({...newStyle, garmentType: e.target.value})}
             >
               <option value="">Select Garment Type</option>
-              {GARMENT_TYPES.map(type => (
+              {availableGarmentTypes.map(type => (
                 <option key={type} value={type}>{type}</option>
               ))}
             </select>
             <div className="dialog-buttons">
-              <button onClick={addNewStyle}>Add</button>
-              <button onClick={() => setShowDialog(false)}>Cancel</button>
+              <button onClick={handleAddNewStyle}>Add</button>
+              <button onClick={() => { setShowDialog(false); setNewStyle({ styleNumber: '', brand: '', garmentType: '' }); }}>Cancel</button>
             </div>
           </div>
         </div>
@@ -165,7 +250,7 @@ function SampleTracker() {
                   Style Number: {style.styleNumber} <br />
                   Brand: {style.brand} <br />
                   Garment: {style.garmentType}
-                  </h2>
+                </h2>
               </div>
               <div className="style-dates">
                 <p>Start: {style.startDate?.toLocaleDateString()}</p>
@@ -177,14 +262,15 @@ function SampleTracker() {
                 )}
                 <button 
                   className={`status-button ${style.endDate ? 'completed' : 'progress'}`}
+                  disabled // Status button is just informational
                 >
                   {style.endDate ? "Completed" : "In Progress"}
                 </button>
                 <button 
                   className="delete-button"
-                  onClick={() => deleteStyle(style.id)}
+                  onClick={() => handleDeleteStyle(style.id)}
                 >
-                  Delete
+                  Delete Style
                 </button>
               </div>
             </div>
@@ -193,25 +279,26 @@ function SampleTracker() {
               <div className="timeline-line"></div>
               <div 
                 className="timeline-progress" 
-                style={{ width: getProgressWidth(style.samples) }} // ✅ Now works correctly
+                style={{ width: getProgressWidth(style.samples) }}
               ></div>
               <div className="timeline-points">
-              {style.samples.map((sample, index) => (
-                <div key={sample.type} className="sample-point">
+              {/* Ensure samples are sorted or rely on backend order. Backend sorts by sample.id */}
+              {style.samples && style.samples.map((sample) => (
+                <div key={sample.id} className="sample-point"> {/* Use sample.id as key */}
                   <button
                     className={`checkpoint ${sample.completed ? 'completed' : ''}`}
-                    onClick={() => toggleSample(style.id, index)}
+                    onClick={() => handleToggleSample(style.id, sample.id)} // Pass sample.id
                   ></button>
                   <p className="sample-label">{sample.type}</p>
-                  {sample.completed && (
+                  {sample.completed && sample.startDate && sample.endDate && (
                     <p className="sample-days">
                       {calculateDays(sample.startDate, sample.endDate)} days
                     </p>
                   )}
-                  {/* Delete Sample Button */}
                   <button 
                     className="delete-sample-button"
-                    onClick={() => deleteSample(style.id, index)}
+                    title="Delete this sample"
+                    onClick={() => handleDeleteSample(style.id, sample.id)} // Pass sample.id
                   >
                     ❌
                   </button>
@@ -222,17 +309,17 @@ function SampleTracker() {
                   <input 
                     type="text" 
                     placeholder="Enter new sample type" 
-                    value={newSampleType} 
-                    onChange={(e) => setNewSampleType(e.target.value)} 
+                    value={newSampleTypePerStyle[style.id] || ""} 
+                    onChange={(e) => handleSampleTypeInputChange(style.id, e.target.value)}
+                    onKeyPress={(e) => { if (e.key === 'Enter') handleAddSample(style.id, newSampleTypePerStyle[style.id]);}}
                   />
                   <button 
                     className="add-sample-button" 
-                    onClick={() => addSample(style.id, newSampleType)}
+                    onClick={() => handleAddSample(style.id, newSampleTypePerStyle[style.id])}
                   >
                     + Add Sample
                   </button>
                 </div>
-
             </div>
           </div>
         ))}

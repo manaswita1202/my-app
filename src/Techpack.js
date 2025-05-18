@@ -3,14 +3,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import hugoBossLogo from "./assets/hugo-boss.png";
 import usPoloLogo from "./assets/us-polo.png";
-import arrowLogo from "./assets/arrow.png";
+import riverislandlogo from "./assets/riverislandlogo.png";
 import deleteIcon from "./assets/delete.png";
 
 const Techpack = () => {
   const [buyers, setBuyers] = useState([
     { name: "Hugo Boss", logo: hugoBossLogo },
     { name: "US Polo", logo: usPoloLogo },
-    { name: "Arrow", logo: arrowLogo },
+    { name: "River Island", logo: riverislandlogo },
   ]);
 
   
@@ -30,9 +30,9 @@ const Techpack = () => {
   return (
     <div className="techpack-container">
       <h2 className="techpack-title">Techpack & Specsheet</h2>
-      <button className="back-button" onClick={() => navigate("/dashboard")}>
+      {/* <button className="back-button" onClick={() => navigate("/dashboard")}>
         Back
-      </button>
+      </button> */}
 
       {buyers.map((buyer, index) => (
         <div key={index} className="buyer-card">

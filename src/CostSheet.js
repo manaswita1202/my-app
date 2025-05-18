@@ -66,10 +66,9 @@
       styleQuantity: ""
     });
     useEffect(() => {
-      
       if (styleData && activeStyleIndex !== null && styleData[activeStyleIndex]) {
         const activeStyle = styleData[activeStyleIndex];
-        console.log(activeStyle)
+        // console.log(activeStyle) // Keep for debugging if needed
         setFormData(prevFormData => ({
           ...prevFormData,
           buyer: activeStyle?.brand || "",
@@ -77,50 +76,58 @@
           style: activeStyle?.styleNumber || "",
           smvPerPc: activeStyle?.smv || 0,
           season: activeStyle?.techpackData?.season,
-          orderQuantity : activeStyle?.quantity
+          orderQuantity: activeStyle?.quantity
         }));
-
-        console.log("ko")
+  
+        // console.log("ko") // Keep for debugging if needed
         if (activeStyle?.techpackData?.costSheet?.fabricCost) {
-          const updatedFabricRows = activeStyle?.techpackData?.costSheet?.fabricCost.map((fabric) => ({
+          const updatedFabricRows = activeStyle.techpackData.costSheet.fabricCost.map((fabric) => ({
             fabricType: fabric.fabricType || "",
-            source: "Local", // Default value
+            source: "Local", 
             description: fabric.description || "",
-            rate: "", // Default value
-            consumption: "", // Default value
-            fabricCost: 0, // Default value
-            inwardTransport: "", // Default value
-            gst: "5%", // Default value
-            fabricLandedCost: 0, // Default value
+            rate: fabric.rate !== null ? fabric.rate : "", // Populate rate
+            consumption: fabric.quantity !== null ? fabric.quantity : "", // Populate consumption from quantity
+            // Initial calculation for fabricCost and fabricLandedCost can also be done here if needed
+            // For now, matching the structure of existing initial state for fabric:
+            fabricCost: (parseFloat(fabric.rate) || 0) * (parseFloat(fabric.quantity) || 0),
+            inwardTransport: "", 
+            gst: "5%", 
+            fabricLandedCost: (parseFloat(fabric.rate) || 0) * (parseFloat(fabric.quantity) || 0), // Initial landed cost, assuming no transport/GST yet or to be added
           }));
-          console.log(updatedFabricRows)
-    
+          // console.log(updatedFabricRows) // Keep for debugging if needed
           setFabricRows(updatedFabricRows);
         }
-        console.log("trim")
+  
+        // console.log("trim") // Keep for debugging if needed
         if (activeStyle?.techpackData?.costSheet?.trimCost) {
-          const updatedTrimRows = activeStyle?.techpackData?.costSheet?.trimCost.map((trims) => ({
-            trim: trims.trim || "", // Use the trim name from techpackData
-            source: "Local", // Default value
-            description: trims.descirption || "", // Use the description from techpackData
-            rate: "", // Default value
-            quantityPerGmt: trims.quantity, // Default value
-            inwardDuty: 0, // Default value
-            gst: "5%", // Default value
-            trimCost: 0, // Default value
-          }));
-          console.log(updatedTrimRows)
-    
+          const updatedTrimRows = activeStyle.techpackData.costSheet.trimCost.map((apiTrim) => {
+            // Get rate and quantity from API data, parse them for calculation
+            const numericRate = apiTrim.rate !== null ? parseFloat(apiTrim.rate) : 0;
+            const numericQuantity = apiTrim.quantity !== null ? parseFloat(apiTrim.quantity) : 0;
+  
+            // Calculate inwardDuty and trimCost using the logic from handleTrimChange
+            // inwardDuty = unit_rate * 0.35
+            // trimCost = (unit_rate * quantity) + inwardDuty_calculated_above
+            const calculatedInwardDuty =  (!apiTrim.source || apiTrim.source === 'Local') ? 0.00 : numericRate * 0.35;
+            const calculatedTrimCost = (numericRate * numericQuantity) + calculatedInwardDuty;
+  
+            return {
+              trim: apiTrim.trim || "",
+              source: "Local", // Default value
+              description: apiTrim.description || "", // Corrected typo from descirption
+              rate: apiTrim.rate !== null ? apiTrim.rate : "", // Use the rate from API, or "" if null
+              quantityPerGmt: apiTrim.quantity !== null ? apiTrim.quantity : "", // Use quantity from API, or "" if null
+              inwardDuty: calculatedInwardDuty, // Store calculated numeric value
+              gst: "5%", // Default value
+              trimCost: calculatedTrimCost, // Store calculated numeric value
+            };
+          });
+          // console.log(updatedTrimRows) // Keep for debugging if needed
           setTrimRows(updatedTrimRows);
         }
-  
-
-  
       }
-
     }, [styleData, activeStyleIndex]);
-    
-
+  
     const [outwardTransportation, setOutwardTransportation] = useState(["", ""]);
     const [otherCharges, setOtherCharges] = useState(["", ""]);
 
@@ -182,21 +189,32 @@
       setTrimRows((prev) => {
         const updatedRows = [...prev];
         updatedRows[index] = { ...updatedRows[index], [name]: value };
-
-        if (name === "rate" || name === "quantityPerGmt") {
-          updatedRows[index].inwardDuty = (updatedRows[index].rate || 0) * 0.35;
-          updatedRows[index].trimCost = (updatedRows[index].rate || 0) * (updatedRows[index].quantityPerGmt || 0) + updatedRows[index].inwardDuty;
+  
+        // Ensure calculations use numeric values
+        const currentRate = parseFloat(updatedRows[index].rate) || 0;
+        const currentQuantity = parseFloat(updatedRows[index].quantityPerGmt) || 0;
+  
+        // Check if the changed field affects cost calculations
+        if (name === "rate" || name === "quantityPerGmt" || name === "source") {
+          // Recalculate inwardDuty and trimCost
+          // This is the formula from original code.
+          // inwardDuty is calculated as 35% of the unit rate.
+          const newInwardDuty = (!updatedRows[index].source || updatedRows[index].source === 'Local') ? 0.00 :  currentRate * 0.35;
+          updatedRows[index].inwardDuty = newInwardDuty;
+          
+          // trimCost is (unitRate * quantity) + the above calculated inwardDuty.
+          updatedRows[index].trimCost = (currentRate * currentQuantity) + newInwardDuty;
         }
         return updatedRows;
       });
     };
-
+    
     const addTrimRow = () => {
       setTrimRows([...trimRows, { trim: "", source: "Local", description: "", rate: "", quantityPerGmt: "", inwardDuty: 0, gst: "5%", trimCost: 0 }]);
     };
 
     // Total Calculations
-    const totalTrimsCost = trimRows.reduce((sum, row) => sum + ((parseFloat(row.gst) / 100) * (row.rate || 0) * (row.quantityPerGmt || 0)), 0);
+    const totalTrimsCost = trimRows.reduce((sum, row) => sum +(row.trimCost), 0);
     const sumInwardFreightDuty = trimRows.reduce((sum, row) => sum + (row.inwardDuty || 0), 0);
     const trimsCostWithoutDuty = totalTrimsCost - sumInwardFreightDuty;
     const totalTrimsCostPercentToFOB = formData.inrNetFob ? ((totalTrimsCost / formData.inrNetFob) * 100).toFixed(2) : 0;
@@ -388,7 +406,7 @@
                 <td><input type="text" name="description" value={row.description} onChange={(e) => handleTrimChange(index, e)} /></td>
                 <td><input type="number" name="rate" value={row.rate} onChange={(e) => handleTrimChange(index, e)} /></td>
                 <td><input type="number" name="quantityPerGmt" value={row.quantityPerGmt} onChange={(e) => handleTrimChange(index, e)} /></td>
-                <td>{row.inwardDuty.toFixed(2)}</td>
+                <td>{(!row.source || row.source === 'Local') ? '0.00' : row.inwardDuty.toFixed(2)}</td>
                 <td>
                   <select name="gst" value={row.gst} onChange={(e) => handleTrimChange(index, e)}>
                     <option>5%</option><option>12%</option><option>18%</option><option>28%</option><option>0%</option>
@@ -562,8 +580,8 @@
         <h3 className="text-lg font-bold mt-6">Summary</h3>
         <table className="w-full border mt-4">
           <tbody>
-            <tr><td className="p-2 border">Total Variable Costs</td><td className="p-2 border">{totalVariableCostsCalc} INR</td></tr>
-            <tr><td className="p-2 border">Gross Contribution per Gmt</td><td className="p-2 border">{grossContributionPerGmt} INR</td></tr>
+            <tr><td className="p-2 border">Total Variable Costs</td><td className="p-2 border">{totalVariableCostsCalc.toFixed(2)} INR</td></tr>
+            <tr><td className="p-2 border">Gross Contribution per Gmt</td><td className="p-2 border">{grossContributionPerGmt.toFixed(2)} INR</td></tr>
             <tr><td className="p-2 border">Total Variable Cost % to FOB</td><td className="p-2 border">{totalVariableCostPercent}%</td></tr>
             <tr><td className="p-2 border">Contribution % to FOB</td><td className="p-2 border">{contributionPercent}%</td></tr>
             <tr><td className="p-2 border">Corporate OHs</td><td className="p-2 border">{corporateOhs} INR</td></tr>
