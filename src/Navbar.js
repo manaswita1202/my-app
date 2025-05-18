@@ -193,8 +193,8 @@ const Home = ({ onCollapse }) => {
         </button>
         
         <button
-          className={`sidebar-button ${activeTab === "purchase" ? "active" : ""}`}
-          onClick={() => handleNavigation("purchase")}
+          className={`sidebar-button ${activeTab === "purchaserequestpage" ? "active" : ""}`}
+          onClick={() => handleNavigation("purchaserequestpage")}
           title={isCollapsed ? "Purchase Request" : ""}
         >
           {isCollapsed ? "🛒" : "Purchase Request"}

@@ -23,6 +23,7 @@ import ApprovalStatus from "./ApprovalStatus";
 import ViewFiles from "./StyleDocuments";
 import ImageAnnotator from "./ImageAnnotation";
 import InspirationForm from "./InspirationForm";
+import PurchaseRequestPage from "./PurchaseRequestPage";
 
 function App() {
 
@@ -55,6 +56,7 @@ function App() {
           <Route path="style-documents" element={<ViewFiles />} /> {/* Default Home Page */}
           <Route path="imageannotator" element={<ImageAnnotator/>} />
           <Route path="inspirationform" element={<InspirationForm/>} />
+          <Route path="purchaserequestpage" element={<PurchaseRequestPage/>} />
 
         </Route>      
         </Routes>

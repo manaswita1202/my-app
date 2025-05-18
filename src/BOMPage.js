@@ -1,5 +1,5 @@
 import React, { useState, useEffect, act } from "react";
-import { Table, Button, Input, Select, DatePicker, Tabs } from "antd";
+import { Table, Button, Input, Select, DatePicker, Tabs, Checkbox } from "antd";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import dayjs from "dayjs";
@@ -23,7 +23,8 @@ const BOMPage = () =>{
       size: "",
       uom: "",
       quantity: 0,
-      supplier: ""
+      supplier: "",
+      pr: false
    } 
   ]);  
   const [fabricData, setFabricData] = useState([
@@ -36,7 +37,8 @@ const BOMPage = () =>{
       size: "",
       uom: "",
       consumption: 0,
-      supplier: ""
+      supplier: "",
+      pr: false
     }]);
 
   const [headerData, setHeaderData] = useState({
@@ -84,6 +86,7 @@ useEffect(() => {
         uom: "", // Default value
         consumption: 0, // Default value
         supplier: fabric.supplier, // Default value
+        pr: false
       }));
 
       setFabricData(updatedFabricData);
@@ -101,6 +104,7 @@ useEffect(() => {
         uom: "", // Default value
         quantity: trim.quantity, // Default value
         supplier: trim.supplier, // Default value
+        pr: false
       }));
       console.log(updatedTrimsData)
 
@@ -140,6 +144,7 @@ useEffect(() => {
         uom: "",
         consumption: 0,
         supplier: "",
+        pr: false,
       },
     ]);
   };
@@ -156,6 +161,7 @@ useEffect(() => {
         uom: "",
         quantity: 0,
         supplier: "",
+        pr: false,
       },
     ]);
   };
@@ -192,13 +198,14 @@ useEffect(() => {
         row.uom,
         row.consumption,
         row.supplier,
+        row.pr ? "Yes" : "No",
       ]),
     });
   
     // Trims Table
     doc.autoTable({
       startY: doc.autoTable.previous.finalY + 10,
-      head: [["S. No.", "Style No.", "Trims", "Trim Description", "Color", "Size", "UOM","Quantity", "Supplier"]],
+      head: [["S. No.", "Code", "Trims", "Trim Description", "Color", "Size", "UOM","Quantity", "Supplier"]],
       body: trimsData.map((row, index) => [
         index + 1,
         row.styleNo,
@@ -209,6 +216,7 @@ useEffect(() => {
         row.uom,
         row.quantity,
         row.supplier,
+        row.pr ? "Yes" : "No",
       ]),
     });
   
@@ -330,6 +338,19 @@ useEffect(() => {
         />
       ),
     },
+    {
+      title: "PR",
+      dataIndex: "pr",
+      key: "pr",
+      render: (checked, record) => (
+        <Checkbox
+          checked={checked}
+          onChange={(e) =>
+            handleTableChange(record.key, "pr", e.target.checked, "fabric")
+          }
+        />
+      ),
+    },
   ];
   const columnsTrim = [
     { title: "S. No.", dataIndex: "key", key: "key" },
@@ -438,6 +459,19 @@ useEffect(() => {
           value={text}
           onChange={(e) =>
             handleTableChange(record.key, "supplier", e.target.value, "trim")
+          }
+        />
+      ),
+    },
+    {
+      title: "PR",
+      dataIndex: "pr",
+      key: "pr",
+      render: (checked, record) => (
+        <Checkbox
+          checked={checked}
+          onChange={(e) =>
+            handleTableChange(record.key, "pr", e.target.checked, "trim")
           }
         />
       ),

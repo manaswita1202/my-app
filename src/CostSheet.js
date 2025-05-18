@@ -9,10 +9,10 @@
 
     const { activityData, setActivityData, styleData, setStyleData,activeStyleIndex, setActiveStyleIndex } = useOutletContext(); // Get from Layout
     const [fabricRows, setFabricRows] = useState([
-      { fabricType: "", source: "Local", description: "", rate: "", consumption: "", fabricCost: 0, inwardTransport: "", gst: "5%", fabricLandedCost: 0 }
+      { fabricType: "", source: "Local", description: "", rate: "", consumption: "", fabricCost: 0, inwardTransport: "", gst: "0%", fabricLandedCost: 0 }
     ]);
 
-    const [trimRows, setTrimRows] = useState([{ trim: "", source: "Local", description: "", rate: "", quantityPerGmt: "", inwardDuty: 0, gst: "5%", trimCost: 0 }]);
+    const [trimRows, setTrimRows] = useState([{ trim: "", source: "Local", description: "", rate: "", quantityPerGmt: "", inwardDuty: 0, gst: "0%", trimCost: 0 }]);
 
     const [valueAddRows, setValueAddRows] = useState([
       { valueAdd: "Waistband", process: "Printing", cost: "" },
@@ -118,7 +118,7 @@
               rate: apiTrim.rate !== null ? apiTrim.rate : "", // Use the rate from API, or "" if null
               quantityPerGmt: apiTrim.quantity !== null ? apiTrim.quantity : "", // Use quantity from API, or "" if null
               inwardDuty: calculatedInwardDuty, // Store calculated numeric value
-              gst: "5%", // Default value
+              gst: "0%", // Default value
               trimCost: calculatedTrimCost, // Store calculated numeric value
             };
           });
@@ -176,7 +176,7 @@
     };
 
     const addFabricRow = () => {
-      setFabricRows([...fabricRows, { fabricType: "", source: "Local", description: "", rate: "", consumption: "", fabricCost: 0, inwardTransport: "", gst: "5%", fabricLandedCost: 0 }]);
+      setFabricRows([...fabricRows, { fabricType: "", source: "Local", description: "", rate: "", consumption: "", fabricCost: 0, inwardTransport: "", gst: "0%", fabricLandedCost: 0 }]);
     };
 
     // Calculate total values
@@ -210,7 +210,7 @@
     };
     
     const addTrimRow = () => {
-      setTrimRows([...trimRows, { trim: "", source: "Local", description: "", rate: "", quantityPerGmt: "", inwardDuty: 0, gst: "5%", trimCost: 0 }]);
+      setTrimRows([...trimRows, { trim: "", source: "Local", description: "", rate: "", quantityPerGmt: "", inwardDuty: 0, gst: "0%", trimCost: 0 }]);
     };
 
     // Total Calculations
