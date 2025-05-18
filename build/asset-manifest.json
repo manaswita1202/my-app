@@ -1,0 +1,30 @@
+{
+  "files": {
+    "main.css": "/static/css/main.99463ae1.css",
+    "main.js": "/static/js/main.17abb0b7.js",
+    "static/js/213.ede2cc13.chunk.js": "/static/js/213.ede2cc13.chunk.js",
+    "static/js/667.2369aea3.chunk.js": "/static/js/667.2369aea3.chunk.js",
+    "static/media/others.png": "/static/media/others.083e48488b0d157e3998.png",
+    "static/media/samplifylogo.png": "/static/media/samplifylogo.66db4baed89920300b22.png",
+    "static/media/mfilaments.png": "/static/media/mfilaments.1f6964a1586a4e43af54.png",
+    "static/media/powerbutton.png": "/static/media/powerbutton.708257fefd9267127a0a.png",
+    "static/media/us-polo.png": "/static/media/us-polo.be0a466896ea46e33886.png",
+    "static/media/sat.png": "/static/media/sat.9e61e660bb3e58c96fc7.png",
+    "static/media/riverislandlogo.png": "/static/media/riverislandlogo.3f6123bdfed1cc800cdc.png",
+    "static/media/gms.png": "/static/media/gms.2612abe4373cd1c6bf1a.png",
+    "static/media/averylogo.jpg": "/static/media/averylogo.193f0864c69023f3ac39.jpg",
+    "static/media/hugobosslogo.png": "/static/media/hugobosslogo.ccfdbcd8bc03cb8ba218.png",
+    "static/media/arvind.png": "/static/media/arvind.7ebe82f9035f245c9741.png",
+    "static/media/nkp.png": "/static/media/nkp.e8432b3c737a0ec60a36.png",
+    "static/media/hugo-boss.png": "/static/media/hugo-boss.d9a9bba95ad15d199d66.png",
+    "index.html": "/index.html",
+    "main.99463ae1.css.map": "/static/css/main.99463ae1.css.map",
+    "main.17abb0b7.js.map": "/static/js/main.17abb0b7.js.map",
+    "213.ede2cc13.chunk.js.map": "/static/js/213.ede2cc13.chunk.js.map",
+    "667.2369aea3.chunk.js.map": "/static/js/667.2369aea3.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.99463ae1.css",
+    "static/js/main.17abb0b7.js"
+  ]
+}
