@@ -1,221 +1,272 @@
-  
-  .inspiration-container {
-    background-color: #ffffff; /* White background for the main container */
-    border: 1px solid #dcdcdc; /* Border similar to the image */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 1000px; /* Max width for larger screens */
-    border-radius: 8px;
-    overflow: hidden; /* Ensures children don't overflow rounded corners */
-    padding: 20px;
+/* InspirationForm.css */
+
+.inspiration-container {
+  background-color: #ffffff;
+  border: 1px solid #dcdcdc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 1000px;
+  margin: 0 auto;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+.inspiration-header {
+  background-color: #dc1010;
+  color: white;
+  text-align: center;
+  padding: 15px 25px;
+  margin: 0 0 20px 0;
+  font-size: 1.8em;
+  border-bottom: 3px solid #ff4500;
+}
+
+.inspiration-form {
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+.input-picture-section,
+.preferences-section,
+.recommendations-section {
+  flex: 1;
+  min-width: 280px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+}
+
+.input-picture-section h2,
+.preferences-section h2,
+.recommendations-section h2 {
+  font-size: 1.1em;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.image-upload-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  min-height: 150px;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.image-upload-wrapper:hover {
+  border-color: #ff4757;
+}
+
+.image-upload-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  color: #555;
+}
+
+.image-preview {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.checkbox-item input[type="checkbox"] {
+  margin-right: 10px;
+  transform: scale(1.1);
+  accent-color: #cb130d;
+}
+
+.checkbox-item label {
+  font-size: 0.95em;
+  color: #444;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.submit-button,
+.reverse-search-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button {
+  background-color: #cb130d;
+  color: white;
+  padding: 12px 25px;
+  font-size: 1.1em;
+}
+
+.submit-button:hover {
+  background-color: #a61009;
+}
+
+.submit-button:disabled {
+  background-color: #e67c76;
+  cursor: not-allowed;
+}
+
+.reverse-search-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.reverse-search-button:hover {
+  background-color: #218838;
+}
+
+.reverse-search-button:disabled {
+  background-color: #7fce9a;
+  color: white;
+  cursor: not-allowed;
+}
+
+/* Results styling */
+.results-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.analysis-results,
+.recommendations-results {
+  background-color: white;
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.analysis-results h2,
+.recommendations-results h2 {
+  color: #333;
+  font-size: 1.4em;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #cb130d;
+}
+
+.basic-info {
+  margin-bottom: 2rem;
+}
+
+.basic-info ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.basic-info li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.basic-info strong {
+  display: inline-block;
+  width: 120px;
+  color: #555;
+}
+
+.charts-container {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.chart-section {
+  flex: 1;
+  min-width: 300px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  margin-bottom: 10px;
+}
+
+.chart-section h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.1em;
+}
+
+.recommendation-intro {
+  background-color: #fff0ed;
+  padding: 12px;
+  border-left: 4px solid #cb130d;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  color: #555;
+}
+
+.recommendation-charts {
+  margin-top: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .results-container {
+    grid-template-columns: 1fr;
   }
-  
-  .inspiration-header {
-    background-color: #dc1010; /* Dark header background */
-    color: white;
-    text-align: center;
-    padding: 15px 25px;
-    margin: 0;
-    font-size: 1.8em;
-    border-bottom: 3px solid #ff4500; /* Accent color bottom border */
-  }
-  
-  .inspiration-form {
-    padding: 25px;
-    display: flex;
+}
+
+@media (max-width: 768px) {
+  .form-sections {
     flex-direction: column;
   }
   
-  .form-sections {
-    display: flex;
-    flex-wrap: wrap; /* Allow sections to wrap on smaller screens */
-    gap: 25px; /* Space between sections */
-    margin-bottom: 25px;
+  .inspiration-header {
+    font-size: 1.5em;
+    padding: 12px 20px;
   }
   
-  .input-picture-section,
-  .preferences-section,
-  .recommendations-section {
-    flex: 1; /* Allows sections to grow and share space */
-    min-width: 280px; /* Minimum width before wrapping */
-    padding: 15px;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    background-color: #f9f9f9;
+  .inspiration-form {
+    padding: 20px;
   }
   
-  .input-picture-section h2,
-  .preferences-section h2,
-  .recommendations-section h2 {
-    font-size: 1.1em;
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: #333;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 8px;
-  }
-  
-  .image-upload-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 2px dashed #ccc;
-    border-radius: 6px;
-    padding: 10px;
-    min-height: 150px; /* Minimum height for the upload area */
-    cursor: pointer;
-    transition: border-color 0.3s ease;
-  }
-  
-  .image-upload-wrapper:hover {
-    border-color: #ff4757; /* Accent color on hover */
-  }
-  
-  .image-upload-label {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    color: #555;
-  }
-  
-  .image-preview {
-    max-width: 100%;
-    max-height: 200px; /* Max height for the preview */
-    object-fit: contain; /* Scales image while maintaining aspect ratio */
-    border-radius: 4px;
-  }
-  
-  .checkbox-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .checkbox-item input[type="checkbox"] {
-    margin-right: 10px;
-    transform: scale(1.1); /* Slightly larger checkboxes */
-    accent-color: #cb130d; /* Checkbox color */
-  }
-  
-  .checkbox-item label {
-    font-size: 0.95em;
-    color: #444;
-  }
-  
-  .submit-button {
-    background-color: #cb130d; /* Accent color for button */
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    font-size: 1.1em;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    align-self: center; /* Center button if form becomes very wide */
-    margin-top: 10px; /* Space above the button */
-  }
-  
-  .submit-button:hover {
-    background-color: #cb130d; /* Darker accent on hover */
-  }
-
   .charts-container {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
-    margin-top: 2rem;
-  }
-  
-  .chart-section {
-    flex: 1;
-    min-width: 300px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 1rem;
-    background-color: #f9f9f9;
-  }
-  
-  .chart-section h3 {
-    text-align: center;
-    margin-bottom: 1rem;
-    color: #333;
-  }
-  
-  .basic-info {
-    margin-bottom: 2rem;
-  }
-  
-  .basic-info ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .basic-info li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .form-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 1rem;
-  }
-  
-  .submit-button, .reverse-search-button {
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    flex-direction: column;
   }
   
   .submit-button {
-    background-color: #007bff;
-    color: white;
+    width: 100%;
   }
-  
-  .submit-button:hover {
-    background-color: #0056b3;
-  }
-  
-  .reverse-search-button {
-    background-color: #28a745;
-    color: white;
-  }
-  
-  .reverse-search-button:hover {
-    background-color: #218838;
-  }
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .form-sections {
-      flex-direction: column; /* Stack sections vertically on smaller screens */
-    }
-  
-    .inspiration-header {
-      font-size: 1.5em;
-      padding: 12px 20px;
-    }
-  
-    .inspiration-form {
-      padding: 20px;
-    }
-  
-    .input-picture-section h2,
-    .preferences-section h2,
-    .recommendations-section h2 {
-      font-size: 1em;
-    }
-  
-    .submit-button {
-      width: 100%; /* Full width button on smaller screens */
-    }
-  }
+}

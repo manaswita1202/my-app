@@ -30,7 +30,7 @@ const Chatbot = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch("http://127.0.0.1:5000/chatbot/query", {
+            const response = await fetch("https://samplify-backend-production.up.railway.app/chatbot/query", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ query: input }),

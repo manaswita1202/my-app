@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import './InspirationForm.css'; // We'll create this CSS file next
+import './InspirationForm.css';
 
 const InspirationForm = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState('');
   const [analysisResult, setAnalysisResult] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [referredPreferences, setReferredPreferences] = useState({
     fabricType: false,
@@ -31,6 +32,8 @@ const InspirationForm = () => {
     if (file) {
       setSelectedImage(file);
       setImagePreviewUrl(URL.createObjectURL(file));
+      // Reset results when new image is selected
+      setAnalysisResult(null);
     } else {
       setSelectedImage(null);
       setImagePreviewUrl('');
@@ -55,6 +58,12 @@ const InspirationForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!selectedImage) {
+      alert("Please select an image first");
+      return;
+    }
+    
+    setIsLoading(true);
     const formData = new FormData();
     formData.append("image", selectedImage);
   
@@ -68,83 +77,17 @@ const InspirationForm = () => {
       setAnalysisResult(data);
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("Something went wrong. Check the console.");
+      alert("Something went wrong.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleReverseImageSearch = () => {
     if (selectedImage) {
-      // Method 1: Upload to a temporary image hosting service and search
-      const uploadAndSearch = async () => {
-        try {
-          // Convert to base64 for URL encoding
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            const base64Data = e.target.result;
-            // Create Google Images search URL with the base64 data
-            const searchUrl = `https://www.google.com/searchbyimage?image_url=data:image/jpeg;base64,${base64Data.split(',')[1]}`;
-            window.open(searchUrl, '_blank');
-          };
-          reader.readAsDataURL(selectedImage);
-        } catch (error) {
-          console.error('Error with reverse image search:', error);
-          // Fallback: Open Google Images upload page
-          window.open('https://images.google.com/', '_blank');
-          alert('Please use the camera icon on Google Images to upload your image manually.');
-        }
-      };
-
-      uploadAndSearch();
-    } else {
-      alert('Please select an image first');
-    }
-  };
-
-  // Alternative method: Upload to imgbb and then search
-  const handleReverseImageSearchAlternative = async () => {
-    if (selectedImage) {
-      try {
-        // Convert image to base64
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-          const base64Data = e.target.result.split(',')[1];
-          
-          // Upload to imgbb (you'll need an API key from imgbb.com)
-          const imgbbApiKey = 'YOUR_IMGBB_API_KEY'; // Get this from imgbb.com
-          
-          if (imgbbApiKey && imgbbApiKey !== 'YOUR_IMGBB_API_KEY') {
-            const formData = new FormData();
-            formData.append('image', base64Data);
-            
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
-              method: 'POST',
-              body: formData
-            });
-            
-            const data = await response.json();
-            if (data.success) {
-              const imageUrl = data.data.url;
-              const searchUrl = `https://www.google.com/searchbyimage?image_url=${encodeURIComponent(imageUrl)}`;
-              window.open(searchUrl, '_blank');
-            } else {
-              throw new Error('Failed to upload image');
-            }
-          } else {
-            // Fallback: Direct method using lens.google.com
-            const blob = new Blob([selectedImage], { type: selectedImage.type });
-            const imageUrl = URL.createObjectURL(blob);
-            
-            // Open Google Lens (works better for uploads)
-            window.open('https://lens.google.com/', '_blank');
-            alert('Please drag and drop your image to Google Lens, or use the upload option.');
-          }
-        };
-        reader.readAsDataURL(selectedImage);
-      } catch (error) {
-        console.error('Error with reverse image search:', error);
-        window.open('https://images.google.com/', '_blank');
-        alert('Please use the camera icon on Google Images to upload your image manually.');
-      }
+      // Open Google Lens in a new tab
+      window.open('https://lens.google.com/', '_blank');
+      alert('Please drag and drop your image to Google Lens, or use the upload option.');
     } else {
       alert('Please select an image first');
     }
@@ -152,6 +95,8 @@ const InspirationForm = () => {
 
   // Function to convert object data to chart format
   const convertToChartData = (data, colors) => {
+    if (!data) return [];
+    
     return Object.entries(data)
       .filter(([key, value]) => value > 0) // Only include items with values > 0
       .map(([key, value], index) => ({
@@ -162,8 +107,12 @@ const InspirationForm = () => {
   };
 
   // Color schemes for the charts
-  const patternColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c'];
-  const colorColors = ['#0088fe', '#00c49f', '#ffbb28', '#ff8042'];
+  const patternColors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#a569bd'];
+  const colorColors = ['#0088fe', '#00c49f', '#ffbb28', '#ff8042', '#9b59b6'];
+  const collarColors = ['#e74c3c', '#3498db', '#2ecc71', '#f1c40f', '#95a5a6'];
+  const sleeveColors = ['#d35400', '#8e44ad', '#16a085', '#c0392b'];
+  const fitColors = ['#7f8c8d', '#e67e22', '#1abc9c', '#9b59b6'];
+  const fabricColors = ['#2980b9', '#27ae60', '#f39c12', '#e74c3c', '#8e44ad'];
 
   const referredOptions = [
     { id: 'ref-fabricType', name: 'fabricType', label: 'FABRIC TYPE' },
@@ -244,105 +193,321 @@ const InspirationForm = () => {
         </div>
 
         <div className="form-actions">
-          <button type="submit" className="submit-button">SUBMIT</button>
-          {selectedImage && (
-            <>
-              <button 
-                type="button" 
-                onClick={handleReverseImageSearch}
-                className="reverse-search-button"
-              >
-                Search on Google Images
-              </button>
-              <button 
-                type="button" 
-                onClick={handleReverseImageSearchAlternative}
-                className="reverse-search-button alt"
-              >
-                Search on Google Lens
-              </button>
-            </>
-          )}
+          <button type="submit" className="submit-button" disabled={isLoading}>
+            {isLoading ? 'ANALYZING...' : 'SUBMIT'}
+          </button>
+          {/* {selectedImage && (
+            <button 
+              type="button" 
+              onClick={handleReverseImageSearch}
+              className="reverse-search-button"
+              disabled={isLoading}
+            >
+              Search on Google Lens
+            </button>
+          )} */}
         </div>
       </form>
 
       {analysisResult && (
-        <div className="analysis-results">
-          <h2>Analysis Results</h2>
-          
-          {/* Basic Analysis Information */}
-          <div className="basic-info">
-            <ul>
-              <li><strong>Garment Type:</strong> {analysisResult.garmentType}</li>
-              <li><strong>Pattern:</strong> {analysisResult.pattern}</li>
-              <li><strong>Colour:</strong> {analysisResult.color}</li>
-              <li><strong>Fit:</strong> {analysisResult.fit}</li>
-              <li><strong>Style:</strong> {analysisResult.style}</li>
-              <li><strong>Collar Type:</strong> {analysisResult.collarType}</li>
-              <li><strong>Gender:</strong> {analysisResult.gender}</li>
-            </ul>
+        <div className="results-container">
+          {/* Image Analysis Section */}
+          <div className="analysis-results">
+            <h2>Image Analysis</h2>
+            
+            {/* Basic Analysis Information */}
+            <div className="basic-info">
+              <ul>
+                <li><strong>Garment Type:</strong> {analysisResult.analysis.garmentType}</li>
+                <li><strong>Pattern:</strong> {analysisResult.analysis.pattern}</li>
+                <li><strong>Colour:</strong> {analysisResult.analysis.color}</li>
+                <li><strong>Fit:</strong> {analysisResult.analysis.fit}</li>
+                <li><strong>Style:</strong> {analysisResult.analysis.style}</li>
+                <li><strong>Collar Type:</strong> {analysisResult.analysis.collarType}</li>
+                <li><strong>Gender:</strong> {analysisResult.analysis.gender}</li>
+                <li><strong>Confidence Percentage:</strong> {analysisResult.analysis.confidence}</li>
+              </ul>
+            </div>
+
+            {/* Chart Section */}
+            <div className="charts-container">
+              {/* Pattern Distribution Chart */}
+              {analysisResult.analysis.patternDistribution && (
+                <div className="chart-section">
+                  <h3>Pattern Distribution</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={convertToChartData(analysisResult.analysis.patternDistribution, patternColors)}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {convertToChartData(analysisResult.analysis.patternDistribution, patternColors).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              {/* Color Distribution Chart */}
+              {analysisResult.analysis.colorDistribution && (
+  <div className="chart-section">
+    <h3>Color Distribution</h3>
+    <ResponsiveContainer width="100%" height={300}>
+      <PieChart>
+        <Pie
+          data={analysisResult.analysis.colorDistribution.map((item) => ({
+            name: item.pantoneShade || "Unknown",
+            value: item.percentage,
+          }))}
+          cx="50%"
+          cy="50%"
+          labelLine={false}
+          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+          outerRadius={80}
+          fill="#8884d8"
+          dataKey="value"
+        >
+          {analysisResult.analysis.colorDistribution.map((item, index) => (
+            <Cell
+              key={`cell-${index}`}
+              fill={colorColors[index % colorColors.length]} // Use a predefined color palette
+            />
+          ))}
+        </Pie>
+        <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
+        <Legend />
+      </PieChart>
+    </ResponsiveContainer>
+  </div>
+)}
+            </div>
           </div>
 
-          {/* Chart Section */}
-          <div className="charts-container">
-            {/* Pattern Distribution Chart */}
-            {analysisResult.patternDistribution && (
-              <div className="chart-section">
-                <h3>Pattern Distribution</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={convertToChartData(analysisResult.patternDistribution, patternColors)}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {convertToChartData(analysisResult.patternDistribution, patternColors).map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            )}
+          {/* Recommendations Section */}
+          <div className="recommendations-results">
+            <h2>Recommendations for {analysisResult.analysis.garmentType}</h2>
+            <p className="recommendation-intro">Based on Market competitor data extraction, here are our recommendations:</p>
+            
+            <div className="charts-container recommendation-charts">
+              {/* Collar Distribution Chart */}
+              {analysisResult.recommendations.collarDistribution && (
+                <div className="chart-section">
+                  <h3>Collar Frequency</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={convertToChartData(analysisResult.recommendations.collarDistribution, collarColors)}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {convertToChartData(analysisResult.recommendations.collarDistribution, collarColors).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
 
-            {/* Color Distribution Chart */}
-            {analysisResult.colorDistribution && (
-              <div className="chart-section">
-                <h3>Color Distribution</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={convertToChartData(analysisResult.colorDistribution, colorColors)}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {convertToChartData(analysisResult.colorDistribution, colorColors).map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            )}
+              {/* Sleeve Distribution Chart */}
+              {analysisResult.recommendations.sleeveDistribution && (
+                <div className="chart-section">
+                  <h3>Sleeve Frequency</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={convertToChartData(analysisResult.recommendations.sleeveDistribution, sleeveColors)}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {convertToChartData(analysisResult.recommendations.sleeveDistribution, sleeveColors).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              {/* Fit Distribution Chart */}
+              {analysisResult.recommendations.fitDistribution && (
+                <div className="chart-section">
+                  <h3>Fit Frequency</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={convertToChartData(analysisResult.recommendations.fitDistribution, fitColors)}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {convertToChartData(analysisResult.recommendations.fitDistribution, fitColors).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              {/* Pattern Distribution Chart for Recommendations */}
+              {analysisResult.recommendations.patternDistribution && (
+                <div className="chart-section">
+                  <h3>Pattern Frequency</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={convertToChartData(analysisResult.recommendations.patternDistribution, patternColors)}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {convertToChartData(analysisResult.recommendations.patternDistribution, patternColors).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              {/* Fabric Distribution Chart */}
+              {analysisResult.recommendations.fabricDistribution && (
+                <div className="chart-section">
+                  <h3>Fabric Frequency</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={convertToChartData(analysisResult.recommendations.fabricDistribution, fabricColors)}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {convertToChartData(analysisResult.recommendations.fabricDistribution, fabricColors).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              {/* Color Distribution Chart for Recommendations */}
+              {analysisResult.recommendations.colorDistribution && (
+                <div className="chart-section">
+                  <h3>Color Frequency</h3>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={analysisResult.recommendations.colorDistribution.map((item) => ({
+                          name: item.pantoneShade || "Unknown",
+                          value: item.percentage,
+                        }))}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {analysisResult.recommendations.colorDistribution.map((item, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={fitColors[index % fitColors.length]} // Use a predefined color palette
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
     </div>
   );
 };
+
+async function analyzeImage(imageData) {
+    try {
+        const response = await fetch('https://api.example.com/analyze-image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ image: imageData }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error analyzing image:', error);
+        // Handle the error gracefully, e.g., show a user-friendly message
+        return { error: 'Failed to analyze the image. Please try again later.' };
+    }
+}
+
+// Example usage in your component
+async function handleImageUpload(imageData) {
+    const result = await analyzeImage(imageData);
+
+    if (result.error) {
+        // Display error message to the user
+        alert(result.error);
+    } else {
+        // Process the result
+        console.log('Image analysis result:', result);
+    }
+}
 
 export default InspirationForm;

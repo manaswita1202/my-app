@@ -139,7 +139,7 @@ function OrderTracker() {
 
   const deleteCourier = (courierId) => {
     if (window.confirm('Are you sure you want to delete this courier?')) {
-      fetch(`https://samplify-backend-production.up.railway.app/couriers/${courierId}`, { method: "DELETE" })
+      fetch(`https://samplify-backend-production.up.railway.app/delete_courier/${courierId}`, { method: "DELETE" })
         .then(() => setCouriers(couriers.filter(courier => courier.id !== courierId)))
         .catch(error => console.error("Error deleting courier:", error));
     }
