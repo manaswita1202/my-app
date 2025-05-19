@@ -25,6 +25,7 @@ const Login = () => {
 
       if (response.ok) {
         localStorage.setItem("token", data.access_token); // Store JWT token
+        localStorage.setItem("role_name", data.role_name); // Store role_name
         navigate("/dashboard"); // Redirect to Dashboard
       } else {
         setError(data.message || "Invalid Credentials");

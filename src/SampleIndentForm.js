@@ -41,10 +41,29 @@ const SampleIndentForm = () => {
     sewingThreadDetail: "",
   });
 
+  function extractThreadInfoFromBOM(bom) {
+    let sewingThread = "";
+    let sewingThreadDetail = "";
+    
+    if (bom && bom.trims && Array.isArray(bom.trims)) {
+      const threadTrims = bom.trims.filter(trimItem =>
+        trimItem.trim && typeof trimItem.trim === 'string' &&
+        trimItem.trim.toLowerCase().includes("thread")
+      );
+  
+      sewingThread = threadTrims.map(item => item.trim).join(", ");
+      sewingThreadDetail = threadTrims.map(item => item.code).join(", ");
+    }
+  
+    return { sewingThread, sewingThreadDetail };
+  }
+  
+
   useEffect(() => {
     if (styleData && activeStyleIndex !== null && styleData[activeStyleIndex]) {
       const activeStyle = styleData[activeStyleIndex];
       console.log(activeStyle);
+      const { sewingThread, sewingThreadDetail } = extractThreadInfoFromBOM(activeStyle?.techpackData?.bom);
       setFormData(prevFormData => ({
         ...prevFormData,
         receivedDate: activeStyle?.orderReceivedDate || "",
@@ -54,8 +73,8 @@ const SampleIndentForm = () => {
         mainBodyFabric: activeStyle?.techpackData?.mainBodyFabric || "",
         mainLabel: activeStyle?.techpackData?.mainLabel || "",
         threadShade: activeStyle?.techpackData?.threadShade || "",
-        sewingThread: activeStyle?.techpackData?.sweingThreads || "",
-        sewingThreadDetail: activeStyle?.techpackData?.sweingThreadsDetails || "",
+        sewingThread: sewingThread || "",
+        sewingThreadDetail: sewingThreadDetail || "",
         patternNumber: activeStyle?.techpackData?.patternNo || ""
       }));
     }
@@ -65,36 +84,74 @@ const SampleIndentForm = () => {
     setFormData({ ...formData, [field]: value });
   };
 
-  const generatePDF = () => {
-    const input = document.getElementById("indent-form");
-    
-    // Make sure the hidden form is visible for capturing
-    if (input) {
-      // First make it visible
-      const originalDisplay = input.style.display;
-      input.style.display = "block";
+    const generatePDF = () => {
+      const input = document.getElementById("indent-form");
       
-      html2canvas(input, { scale: 2 }).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF("p", "mm", "a4");
-        
-        // Calculate dimensions to fit the page properly
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        
-        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-        pdf.save("sample_indent_form.pdf");
-        
-        // Reset the display property to its original value
-        input.style.display = originalDisplay;
-      }).catch(error => {
-        console.error("Error generating PDF:", error);
-        input.style.display = originalDisplay;
-      });
-    } else {
-      console.error("Cannot find indent-form element");
-    }
+      // Make sure the hidden form is visible for capturing
+      if (input) {
+        // First make it visible
+        const originalDisplay = input.style.display;
+        input.style.display = "block";
+  
+        const a4Width = 210; // A4 width in mm
+        const a4Height = 297; // A4 height in mm
+        const scale = 2; // Scale factor for better resolution
+  
+        html2canvas(input, { scale }).then((canvas) => {
+          const imgData = canvas.toDataURL("image/png");
+          const pdf = new jsPDF("p", "mm", "a4");
+  
+          // Calculate dimensions to fit the A4 page
+          const pdfWidth = a4Width;
+          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+  
+          if (pdfHeight <= a4Height) {
+            // Content fits within a single page
+            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+          } else {
+            // Content exceeds one page, split into multiple pages
+            let position = 0;
+            const pageHeightInPx = (a4Height * canvas.width) / a4Width; // A4 height in pixels based on canvas width
+  
+            while (position < canvas.height) {
+              const pageCanvas = document.createElement("canvas");
+              pageCanvas.width = canvas.width;
+              pageCanvas.height = Math.min(canvas.height - position, pageHeightInPx);
+  
+              const pageContext = pageCanvas.getContext("2d");
+              pageContext.drawImage(
+                canvas,
+                0,
+                position,
+                canvas.width,
+                pageCanvas.height,
+                0,
+                0,
+                pageCanvas.width,
+                pageCanvas.height
+              );
+  
+              const pageImgData = pageCanvas.toDataURL("image/png");
+              const pageHeightInMm = (pageCanvas.height * a4Width) / canvas.width; // Maintain aspect ratio
+              pdf.addImage(pageImgData, "PNG", 0, 0, pdfWidth, pageHeightInMm);
+  
+              position += pageCanvas.height;
+  
+              if (position < canvas.height) {
+                pdf.addPage();
+              }
+            }
+          }
+  
+          pdf.save("sample_indent_form.pdf");
+          
+          // Reset the display property to its original value
+          input.style.display = originalDisplay;
+        }).catch(error => {
+          console.error("Error generating PDF:", error);
+          input.style.display = originalDisplay;
+        });
+      }
   };
 
   return (
@@ -295,8 +352,8 @@ const SampleIndentForm = () => {
 
         {/* Thread Details */}
         <div style={{ marginBottom: "30px" }}>
-          <p><b>Sewing Thread Code:</b> {formData.sewingThread}</p>
-          <p><b>Sewing Thread Details:</b> {formData.sewingThreadDetail}</p>
+          <p><b>Sewing Thread Code:</b> {formData.sewingThreadDetail}</p>
+          <p><b>Sewing Thread Details:</b> {formData.sewingThread}</p>
         </div>
 
         <div style={{ pageBreakBefore: "always" }}></div>

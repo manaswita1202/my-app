@@ -24,6 +24,7 @@ import ViewFiles from "./StyleDocuments";
 import ImageAnnotator from "./ImageAnnotation";
 import InspirationForm from "./InspirationForm";
 import PurchaseRequestPage from "./PurchaseRequestPage";
+import PerformanceCharts from "./PerformanceCharts";
 
 function App() {
 
@@ -57,7 +58,7 @@ function App() {
           <Route path="imageannotator" element={<ImageAnnotator/>} />
           <Route path="inspirationform" element={<InspirationForm/>} />
           <Route path="purchaserequestpage" element={<PurchaseRequestPage/>} />
-
+          <Route path="performance" element={<PerformanceCharts/>} />
         </Route>      
         </Routes>
     </Router>
