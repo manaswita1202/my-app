@@ -76,6 +76,9 @@ const Header = () => {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role_name");
+    window.location.href = "/login"; // Redirect to login  
     console.log("Logging out...");
   };
 

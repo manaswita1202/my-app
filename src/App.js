@@ -25,6 +25,7 @@ import ImageAnnotator from "./ImageAnnotation";
 import InspirationForm from "./InspirationForm";
 import PurchaseRequestPage from "./PurchaseRequestPage";
 import PerformanceCharts from "./PerformanceCharts";
+import ProtectedRoute from "./ProtectedRoute";
 
 function App() {
 
@@ -35,7 +36,14 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/homepage" element={<HomePage />} />
-        <Route path="/dashboard" element={<Layout />}>
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<ApprovalStatus />} /> {/* Default Home Page */}
           <Route path="techpack/upload" element={<Techpack />} />
           <Route path="fabric-trims" element={<FabricAndTrims />} />
