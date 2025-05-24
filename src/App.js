@@ -26,6 +26,8 @@ import InspirationForm from "./InspirationForm";
 import PurchaseRequestPage from "./PurchaseRequestPage";
 import PerformanceCharts from "./PerformanceCharts";
 import ProtectedRoute from "./ProtectedRoute";
+import SignupForm from "./SignupForm";
+import InviteAdmin from "./InviteAdmin";
 
 function App() {
 
@@ -36,6 +38,7 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/homepage" element={<HomePage />} />
+        <Route path="/register" element={<SignupForm />} />
         <Route
           path="/dashboard"
           element={
@@ -67,6 +70,7 @@ function App() {
           <Route path="inspirationform" element={<InspirationForm/>} />
           <Route path="purchaserequestpage" element={<PurchaseRequestPage/>} />
           <Route path="performance" element={<PerformanceCharts/>} />
+          <Route path="invite" element={<InviteAdmin/>} />
         </Route>      
         </Routes>
     </Router>

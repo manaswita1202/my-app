@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Bell, ChevronDown, LogOut, User, X, MessageCircle } from "lucide-react";
+import { Bell, ChevronDown, LogOut, User, X, MessageCircle, UserPlus } from "lucide-react";
 import "./Header.css";
 import samplifylogo from "./assets/samplifylogo.png";
 import Chatbot from "./Chatbot"; // Assuming you have a ChatBot component
@@ -9,10 +9,17 @@ const Header = () => {
   const [notificationDropdownOpen, setNotificationDropdownOpen] = useState(false);
   const [chatBotOpen, setChatBotOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const userDropdownRef = useRef(null);
   const notificationDropdownRef = useRef(null);
   const chatBotRef = useRef(null);
+
+  // Check if user is admin
+  useEffect(() => {
+    const roleName = localStorage.getItem("role_name");
+    setIsAdmin(roleName === "admin");
+  }, []);
 
   // ✅ Fetch notifications from API
   useEffect(() => {
@@ -80,6 +87,11 @@ const Header = () => {
     localStorage.removeItem("role_name");
     window.location.href = "/login"; // Redirect to login  
     console.log("Logging out...");
+  };
+
+  const handleInvite = () => {
+    window.location.href = "/dashboard/invite"; // Redirect to invite page
+    setUserDropdownOpen(false);
   };
 
   useEffect(() => {
@@ -182,6 +194,12 @@ const Header = () => {
                 <User className="dropdown-item-icon" />
                 <span>Profile</span>
               </div>
+              {isAdmin && (
+                <div className="dropdown-item invite" onClick={handleInvite}>
+                  <UserPlus className="dropdown-item-icon" />
+                  <span>Invite</span>
+                </div>
+              )}
               <div className="dropdown-item logout" onClick={handleLogout}>
                 <LogOut className="dropdown-item-icon" />
                 <span>Logout</span>
