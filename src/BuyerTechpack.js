@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import "./BuyerTechpack.css"; // Import your CSS file for styling
 
 const BuyerPage = () => {
   const currentPath = window.location.pathname;
@@ -8,6 +9,7 @@ const BuyerPage = () => {
   const buyerName = decodeURI(currentPath.split("/")[3]); // Get buyer name from URL slug
   const garments = ["T-Shirts", "Shirts", "Shorts", "Trousers"];
   const [files, setFiles] = useState({});
+  const [loadingStates, setLoadingStates] = useState({}); // Track loading state for each garment
 
   const handleFileChange = (garment, fileType, event) => {
     const newFiles = { ...files };
@@ -17,6 +19,7 @@ const BuyerPage = () => {
     newFiles[garment][fileType] = event.target.files[0];
     setFiles(newFiles);
   };
+
   const triggerNotification = async (message) => {
     try {
       await fetch("https://samplify-backend-production.up.railway.app/api/notifications", {
@@ -31,8 +34,10 @@ const BuyerPage = () => {
     }
   };
 
-
   const handleUpload = async (garment) => {
+    // Set loading state for this specific garment
+    setLoadingStates(prev => ({ ...prev, [garment]: true }));
+
     const formData = new FormData();
     formData.append("buyerName", buyerName);
     formData.append("garment", garment);
@@ -56,6 +61,9 @@ const BuyerPage = () => {
     } catch (error) {
       console.error("Error uploading files:", error);
       alert("File upload failed!");
+    } finally {
+      // Clear loading state for this garment
+      setLoadingStates(prev => ({ ...prev, [garment]: false }));
     }
   };
 
@@ -65,13 +73,22 @@ const BuyerPage = () => {
       {garments.map((garment) => (
         <div key={garment} style={{ marginBottom: "20px", border: "1px solid #ccc", padding: "10px" }}>
           <h3>{garment}</h3>
-          <label>Techpack: <input type="file" onChange={(e) => handleFileChange(garment, "techpack", e)} /></label>
+          <label>Techpack: <input type="file" onChange={(e) => handleFileChange(garment, "techpack", e)} disabled={loadingStates[garment]} /></label>
           <br />
-          <label>BOM: <input type="file" onChange={(e) => handleFileChange(garment, "bom", e)} /></label>
+          <label>BOM: <input type="file" onChange={(e) => handleFileChange(garment, "bom", e)} disabled={loadingStates[garment]} /></label>
           <br />
-          <label>Spec-sheet: <input type="file" onChange={(e) => handleFileChange(garment, "specSheet", e)} /></label>
+          <label>Spec-sheet: <input type="file" onChange={(e) => handleFileChange(garment, "specSheet", e)} disabled={loadingStates[garment]} /></label>
           <br />
-          <button onClick={() => handleUpload(garment)}>Upload</button>
+          <button 
+            onClick={() => handleUpload(garment)} 
+            disabled={loadingStates[garment]}
+            style={{ 
+              backgroundColor: loadingStates[garment] ? '#ccc' : '#c20e35',
+              cursor: loadingStates[garment] ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {loadingStates[garment] ? 'Uploading...' : 'Upload'}
+          </button>
         </div>
       ))}
     </div>

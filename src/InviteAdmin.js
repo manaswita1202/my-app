@@ -26,7 +26,7 @@ const InviteAdmin = () => {
   const fetchInvites = async () => {
     try {
       const token = localStorage.getItem('token'); // Adjust based on your auth system
-      const response = await fetch('http://localhost:5000/invites', {
+      const response = await fetch('https://samplify-backend-production.up.railway.app/invites', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -59,7 +59,7 @@ const InviteAdmin = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/create-invite', {
+      const response = await fetch('https://samplify-backend-production.up.railway.app/create-invite', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -91,7 +91,7 @@ const InviteAdmin = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/revoke-invite/${inviteHash}`, {
+      const response = await fetch(`https://samplify-backend-production.up.railway.app/revoke-invite/${inviteHash}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

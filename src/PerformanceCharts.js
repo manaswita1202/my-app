@@ -22,11 +22,11 @@ const SAMPLE_DELIVERY_DATA = {
     onTimePercentage: 75,
     latePercentage: 25,
     delayReasons: [
-    { name: 'Tracking of Sample Production Within Departments', value: 45 },
-    { name: 'Communication between Departments ', value: 25 },
-    { name: 'Manual Errors & Delays (Involves Rework)', value: 15 },
-    { name: 'Waiting for Fabric Approval & Receipt ', value: 10 },
-    { name: 'Other Non-Value Activities', value: 5 },
+    { name: 'Embroidery', value: 60 },
+    { name: 'Pattern Making ', value: 56 },
+    { name: 'Finishing', value: 48 },
+    { name: 'Sampling ', value: 44 },
+    { name: 'Outsourcing Delay', value: 40 },
     ]
     };
     
@@ -41,13 +41,39 @@ const SAMPLE_TNA_DATA = [
     ];
     
 const SAMPLE_APPROVAL_DATA = [
-    { month: 'Jan', approvalRate: 75 },
-    { month: 'Feb', approvalRate: 78 },
-    { month: 'Mar', approvalRate: 80 },
-    { month: 'Apr', approvalRate: 85 },
-    { month: 'May', approvalRate: 82 },
+    { month: 'Jan', approvalRate: 95 },
+    { month: 'Feb', approvalRate: 67 },
+    { month: 'Mar', approvalRate: 68 },
+    { month: 'Apr', approvalRate: 75 },
     ];
 
+    const APPROVAL_DATA = [
+      { name: 'Hugo Boss', approval: 78 },
+      { name: 'Arrow', approval: 92 },
+      { name: 'US Polo', approval: 80 },
+      { name: 'M&S', approval: 85 },
+      { name: 'H&M', approval: 83 },
+      { name: 'River Island', approval: 87 },
+    ];
+    
+    // Data for Monthly On-Time Delivery Percentages
+    const MONTHLY_DELIVERY_DATA = [
+      { name: 'January', onTime: 71.33 },
+      { name: 'February', onTime: 75.5 },
+      { name: 'March', onTime: 85.71 },
+      { name: 'April', onTime: 65 },
+      { name: 'May', onTime: 74.39 },
+    ];
+    
+    // Data for Brand-Specific On-Time Delivery Percentages
+    const BRAND_DELIVERY_DATA = [
+      { name: 'Arrow', onTime: 76 },
+      { name: 'H&M', onTime: 66.14 },
+      { name: 'Hugo Boss', onTime: 62 },
+      { name: 'M&S', onTime: 80 },
+      { name: 'River Island', onTime: 55 },
+      { name: 'US Polo', onTime: 67.14 },
+    ];    
 // Color constants
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
@@ -158,7 +184,29 @@ const DelayReasonsChart = ({ data = SAMPLE_DELIVERY_DATA }) => {
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data.delayReasons}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
+          <XAxis 
+          dataKey="name" 
+          tick={({ x, y, payload }) => {
+            const lines = payload.value.split(' '); // Split text into multiple lines
+            return (
+              <g transform={`translate(${x},${y + 10})`}>
+                {lines.map((line, index) => (
+                  <text 
+                    key={index} 
+                    x={1} 
+                    y={index * 12} // Adjust line spacing
+                    textAnchor="middle" 
+                    fontSize={12}
+                    top={10} // Adjust vertical alignment
+                  >
+                    {line}
+                  </text>
+                ))}
+              </g>
+            );
+          }}
+          interval={0} // Ensures all labels are displayed
+          />          
           <YAxis />
           <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
           <Legend />
@@ -168,7 +216,6 @@ const DelayReasonsChart = ({ data = SAMPLE_DELIVERY_DATA }) => {
     </div>
   );
 };
-
 // 5. TNA Milestones Timeline
 const TNAMilestonesChart = ({ data = SAMPLE_TNA_DATA }) => {
   const processedData = data.map(item => {
@@ -199,10 +246,11 @@ const TNAMilestonesChart = ({ data = SAMPLE_TNA_DATA }) => {
     return new Date(timestamp).toLocaleDateString();
   };
 
+
   return (
     <div className="chart-wrapper">
       <h2 className="chart-title">TNA Milestones Timeline</h2>
-      <div className="table-container">
+      {/* <div className="table-container">
         <table className="milestones-table">
           <thead>
             <tr className="table-header-row">
@@ -242,7 +290,7 @@ const TNAMilestonesChart = ({ data = SAMPLE_TNA_DATA }) => {
             ))}
           </tbody>
         </table>
-      </div>
+      </div> */}
       <div className="tna-chart-area">
         <ResponsiveContainer width="100%" height={300}>
           <ComposedChart data={chartData}>
@@ -300,6 +348,71 @@ const ApprovalRatesTrendChart = ({ data = SAMPLE_APPROVAL_DATA }) => {
   );
 };
 
+const ApprovalChart = ({ data = APPROVAL_DATA }) => (
+  <div className="chart-wrapper">
+    <h2 className="chart-title">Sample Approval Rates</h2>
+    <ResponsiveContainer width="100%" height={300}>
+      <PieChart>
+        <Pie
+          data={data}
+          dataKey="approval"
+          nameKey="name"
+          cx="50%"
+          cy="50%"
+          outerRadius={100}
+          label={({ name, approval }) => `${name}: ${approval}%`}
+        >
+          {data.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip formatter={(value) => [`${value}%`, 'Approval Rate']} />
+      </PieChart>
+    </ResponsiveContainer>
+  </div>
+);
+// Chart for Monthly On-Time Delivery Percentages
+const MonthlyDeliveryChart = ({ data = MONTHLY_DELIVERY_DATA }) => (
+  <div className="chart-wrapper">
+    <h2 className="chart-title">Monthly On-Time Delivery Percentages</h2>
+    <ResponsiveContainer width="100%" height={300}>
+      <BarChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip formatter={(value) => [`${value}%`, 'On-Time Delivery']} />
+        <Legend />
+        <Bar dataKey="onTime" fill="#8884d8" name="On-Time %" />
+      </BarChart>
+    </ResponsiveContainer>
+  </div>
+);
+
+const BrandDeliveryChart = ({ data = BRAND_DELIVERY_DATA }) => (
+  <div className="chart-wrapper">
+    <h2 className="chart-title">Brand-Specific On-Time Delivery Percentages</h2>
+    <ResponsiveContainer width="100%" height={300}>
+      <PieChart>
+        <Pie
+          data={data}
+          dataKey="onTime"
+          nameKey="name"
+          cx="50%"
+          cy="50%"
+          outerRadius={100}
+          label={({ name, onTime }) => `${name}: ${onTime}%`}
+        >
+         {data.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          ))}
+          </Pie>
+        <Tooltip formatter={(value) => [`${value}%`, 'On-Time Delivery']} />
+      </PieChart>
+    </ResponsiveContainer>
+  </div>
+);
+
+
 // Main Dashboard Component
 const SupplierDashboard = () => {
   const [supplierData, setSupplierData] = useState(SAMPLE_SUPPLIER_DATA);
@@ -309,18 +422,32 @@ const SupplierDashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <h1 className="dashboard-title">Supplier Performance Dashboard</h1>
+      <h1 className="dashboard-title">Performance Dashboard</h1>
       
       <div className="dashboard-grid">
-        <div>
+        {/* <div>
           <SupplierRankingChart data={supplierData} />
-          <OnTimeDeliveryPieChart data={deliveryData} />
+          {/* <OnTimeDeliveryPieChart data={deliveryData} /> 
+        </div> */}
+        <div>
           <ApprovalRatesTrendChart data={approvalData} />
+
+          </div>
+        {/* <div>
+          <OnTimeDeliveryChart data={supplierData} />
+          </div> */}
+          <div>
+          <DelayReasonsChart data={deliveryData} />
+          </div>
+          <div><TNAMilestonesChart data={tnaData} /></div>
+        <div>
+          <ApprovalChart data={APPROVAL_DATA} />
         </div>
         <div>
-          <OnTimeDeliveryChart data={supplierData} />
-          <DelayReasonsChart data={deliveryData} />
-          <TNAMilestonesChart data={tnaData} />
+        <MonthlyDeliveryChart data={MONTHLY_DELIVERY_DATA} />
+        </div>
+        <div>
+        <BrandDeliveryChart data={BRAND_DELIVERY_DATA} />
         </div>
       </div>
     </div>

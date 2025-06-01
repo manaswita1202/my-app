@@ -13,6 +13,7 @@ body {
     border-radius: 0.5rem; /* Rounded corners for the card */
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* Subtle shadow */
     margin-bottom: 2rem; /* mb-8 equivalent */
+    height: 100%; /* Full height for the chart container */
   }
   
   .chart-title {

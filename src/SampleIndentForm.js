@@ -9,7 +9,7 @@ import { useOutletContext } from "react-router-dom";
 const sampleTypes = [
   { value: "PP", label: "PP" },
   { value: "Proto", label: "Proto" },
-  { value: "Fit", label: "Fit" },
+  { value: "Fit Sample", label: "Fit" },
   { value: "SMS", label: "SMS" },
   { value: "Photoshoot", label: "Photoshoot" },
 ];
@@ -50,9 +50,9 @@ const SampleIndentForm = () => {
         trimItem.trim && typeof trimItem.trim === 'string' &&
         trimItem.trim.toLowerCase().includes("thread")
       );
-  
-      sewingThread = threadTrims.map(item => item.trim).join(", ");
-      sewingThreadDetail = threadTrims.map(item => item.code).join(", ");
+      
+      sewingThreadDetail = threadTrims.map(item => item.description).join(", ");
+      sewingThread = threadTrims.map(item => item.code).join(", ");
     }
   
     return { sewingThread, sewingThreadDetail };
@@ -75,7 +75,9 @@ const SampleIndentForm = () => {
         threadShade: activeStyle?.techpackData?.threadShade || "",
         sewingThread: sewingThread || "",
         sewingThreadDetail: sewingThreadDetail || "",
-        patternNumber: activeStyle?.techpackData?.patternNo || ""
+        patternNumber: activeStyle?.styleNumber || "",
+        stitchingLine: activeStyle?.garment || "",
+        sampleType: activeStyle?.sampleType || "",
       }));
     }
   }, [styleData, activeStyleIndex]);
@@ -84,75 +86,125 @@ const SampleIndentForm = () => {
     setFormData({ ...formData, [field]: value });
   };
 
-    const generatePDF = () => {
-      const input = document.getElementById("indent-form");
-      
-      // Make sure the hidden form is visible for capturing
-      if (input) {
-        // First make it visible
-        const originalDisplay = input.style.display;
-        input.style.display = "block";
-  
-        const a4Width = 210; // A4 width in mm
-        const a4Height = 297; // A4 height in mm
-        const scale = 2; // Scale factor for better resolution
-  
-        html2canvas(input, { scale }).then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
-          const pdf = new jsPDF("p", "mm", "a4");
-  
-          // Calculate dimensions to fit the A4 page
-          const pdfWidth = a4Width;
-          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-  
-          if (pdfHeight <= a4Height) {
-            // Content fits within a single page
-            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-          } else {
-            // Content exceeds one page, split into multiple pages
-            let position = 0;
-            const pageHeightInPx = (a4Height * canvas.width) / a4Width; // A4 height in pixels based on canvas width
-  
-            while (position < canvas.height) {
-              const pageCanvas = document.createElement("canvas");
-              pageCanvas.width = canvas.width;
-              pageCanvas.height = Math.min(canvas.height - position, pageHeightInPx);
-  
-              const pageContext = pageCanvas.getContext("2d");
-              pageContext.drawImage(
-                canvas,
-                0,
-                position,
-                canvas.width,
-                pageCanvas.height,
-                0,
-                0,
-                pageCanvas.width,
-                pageCanvas.height
-              );
-  
-              const pageImgData = pageCanvas.toDataURL("image/png");
-              const pageHeightInMm = (pageCanvas.height * a4Width) / canvas.width; // Maintain aspect ratio
-              pdf.addImage(pageImgData, "PNG", 0, 0, pdfWidth, pageHeightInMm);
-  
-              position += pageCanvas.height;
-  
-              if (position < canvas.height) {
-                pdf.addPage();
-              }
+  // Helper function to check if a value is non-empty
+  const isNonEmpty = (value) => {
+    return value && value.toString().trim() !== "";
+  };
+
+  // Helper function to render field only if it has a value
+  const renderFieldIfNonEmpty = (label, value, includeBox = false) => {
+    if (!isNonEmpty(value)) return null;
+    
+    if (includeBox) {
+      return (
+        <div key={label} style={{ display: "contents" }}>
+          <p><b>{label}:</b> {value}</p>
+          <div style={{ width: "120px", height: "100px", border: "2px solid #000" }}></div>
+        </div>
+      );
+    }
+    
+    return <p key={label}><b>{label}:</b> {value}</p>;
+  };
+
+  const generatePDF = () => {
+    const input = document.getElementById("indent-form");
+    
+    // Make sure the hidden form is visible for capturing
+    if (input) {
+      // First make it visible
+      const originalDisplay = input.style.display;
+      input.style.display = "block";
+
+      const a4Width = 210; // A4 width in mm
+      const a4Height = 297; // A4 height in mm
+      const scale = 2; // Scale factor for better resolution
+
+      html2canvas(input, { scale }).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        // Calculate dimensions to fit the A4 page
+        const pdfWidth = a4Width;
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        if (pdfHeight <= a4Height) {
+          // Content fits within a single page
+          pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        } else {
+          // Content exceeds one page, split into multiple pages
+          let position = 0;
+          const pageHeightInPx = (a4Height * canvas.width) / a4Width; // A4 height in pixels based on canvas width
+
+          while (position < canvas.height) {
+            const pageCanvas = document.createElement("canvas");
+            pageCanvas.width = canvas.width;
+            pageCanvas.height = Math.min(canvas.height - position, pageHeightInPx);
+
+            const pageContext = pageCanvas.getContext("2d");
+            pageContext.drawImage(
+              canvas,
+              0,
+              position,
+              canvas.width,
+              pageCanvas.height,
+              0,
+              0,
+              pageCanvas.width,
+              pageCanvas.height
+            );
+
+            const pageImgData = pageCanvas.toDataURL("image/png");
+            const pageHeightInMm = (pageCanvas.height * a4Width) / canvas.width; // Maintain aspect ratio
+            pdf.addImage(pageImgData, "PNG", 0, 0, pdfWidth, pageHeightInMm);
+
+            position += pageCanvas.height;
+
+            if (position < canvas.height) {
+              pdf.addPage();
             }
           }
-  
-          pdf.save("sample_indent_form.pdf");
-          
-          // Reset the display property to its original value
-          input.style.display = originalDisplay;
-        }).catch(error => {
-          console.error("Error generating PDF:", error);
-          input.style.display = originalDisplay;
-        });
-      }
+        }
+
+        pdf.save("sample_indent_form.pdf");
+        
+        // Reset the display property to its original value
+        input.style.display = originalDisplay;
+      }).catch(error => {
+        console.error("Error generating PDF:", error);
+        input.style.display = originalDisplay;
+      });
+    }
   };
+
+  // Get non-empty basic fields
+  const basicFields = [
+    { label: "Received Date", value: formData.receivedDate },
+    { label: "Received By", value: formData.receivedBy },
+    { label: "Garment", value: formData.stitchingLine },
+    { label: "Total Quantity of Pieces", value: formData.totalQuantity },
+    { label: "Shade/Combo", value: formData.shadeCombo },
+    { label: "Sample Type", value: formData.sampleType },
+    { label: "Style Number", value: formData.patternNumber },
+    { label: "Size", value: formData.fabricDiscussion },
+  ].filter(field => isNonEmpty(field.value));
+
+  // Get non-empty fabric & trim fields with boxes
+  const fabricTrimFieldsWithBoxes = [
+    { label: "Main Body Fabric", value: formData.mainBodyFabric },
+    { label: "Collar/Cuff Fabric", value: formData.collarCuffFabric },
+    { label: "Main Label and other trims", value: formData.mainLabel },
+    { label: "Thread Shade", value: formData.threadShade },
+  ].filter(field => isNonEmpty(field.value));
+
+  // Get non-empty thread details
+  const threadFields = [
+    { label: "Sewing Thread Code", value: formData.sewingThreadDetail },
+    { label: "Sewing Thread Details", value: formData.sewingThread },
+  ].filter(field => isNonEmpty(field.value));
+
+  // Check if we have any fabric & trim content to show
+  const hasFabricTrimContent = fabricTrimFieldsWithBoxes.length > 0 || threadFields.length > 0;
 
   return (
     <div className="container">
@@ -307,54 +359,57 @@ const SampleIndentForm = () => {
           Sample Indent Form
         </h2>
 
-        {/* Form Data */}
-        <div style={{ marginBottom: "5px", lineHeight: "1" }}>
-          <p><b>Received Date:</b> {formData.receivedDate}</p>
-          <p><b>Received By:</b> {formData.receivedBy}</p>
-          <p><b>Garment:</b> {formData.stitchingLine}</p>
-          <p><b>Total Quantity of Pieces:</b> {formData.totalQuantity}</p>
-          <p><b>Shade/Combo:</b> {formData.shadeCombo}</p>
-          <p><b>Sample Type:</b> {formData.sampleType}</p>
-          <p><b>Style Number:</b> {formData.patternNumber}</p>
-          <p><b>Size:</b> {formData.fabricDiscussion}</p>
+        {/* Form Data - Only show non-empty fields */}
+        {basicFields.length > 0 && (
+          <div style={{ marginBottom: "20px", lineHeight: "1.6" }}>
+            {basicFields.map(field => renderFieldIfNonEmpty(field.label, field.value))}
+          </div>
+        )}
+
+        {/* Default section with season if available */}
+        <div style={{ marginBottom: "20px", lineHeight: "1.6" }}>
+          <p><b>Contact Name:</b> Mr. Yagappan</p>
+          {isNonEmpty(formData.season) && <p><b>Season:</b> {formData.season}</p>}
+          <p><b>Category:</b> Men</p>
+          <p><b>Fabric Qty:</b> 1 KG</p>
+          <p><b>Checked By:</b> Devraj</p>
         </div>
 
-        {/* Divider */}
-        <h3 style={{ 
-          marginBottom: "20px", 
-          borderBottom: "2px solid crimson", 
-          paddingBottom: "5px", 
-          color: "crimson" 
-        }}>
-          Fabric & Trim Details
-        </h3>
+        {/* Fabric & Trim Details - Only show if there's content */}
+        {hasFabricTrimContent && (
+          <>
+            <h3 style={{ 
+              marginBottom: "20px", 
+              borderBottom: "2px solid crimson", 
+              paddingBottom: "5px", 
+              color: "crimson" 
+            }}>
+              Fabric & Trim Details
+            </h3>
 
-        {/* Grid Section */}
-        <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: "2fr 1fr", 
-          gap: "30px", 
-          alignItems: "center", 
-          marginBottom: "20px" 
-        }}>
-          <p><b>Main Body Fabric:</b> {formData.mainBodyFabric}</p>
-          <div style={{ width: "120px", height: "100px", border: "2px solid #000" }}></div>
+            {/* Grid Section - Only show fields with values */}
+            {fabricTrimFieldsWithBoxes.length > 0 && (
+              <div style={{ 
+                display: "grid", 
+                gridTemplateColumns: "2fr 1fr", 
+                gap: "30px", 
+                alignItems: "center", 
+                marginBottom: "20px" 
+              }}>
+                {fabricTrimFieldsWithBoxes.map(field => 
+                  renderFieldIfNonEmpty(field.label, field.value, true)
+                )}
+              </div>
+            )}
 
-          <p><b>Collar/Cuff Fabric:</b> {formData.collarCuffFabric}</p>
-          <div style={{ width: "120px", height: "100px", border: "2px solid #000" }}></div> 
-
-          <p><b>Main Label and other trims:</b> {formData.mainLabel}</p>
-          <div style={{ width: "120px", height: "100px", border: "2px solid #000" }}></div>
-
-          <p><b>Thread Shade:</b> {formData.threadShade}</p>
-          <div style={{ width: "120px", height: "100px", border: "2px solid #000" }}></div>
-        </div>
-
-        {/* Thread Details */}
-        <div style={{ marginBottom: "30px" }}>
-          <p><b>Sewing Thread Code:</b> {formData.sewingThreadDetail}</p>
-          <p><b>Sewing Thread Details:</b> {formData.sewingThread}</p>
-        </div>
+            {/* Thread Details - Only show if there are thread fields */}
+            {threadFields.length > 0 && (
+              <div style={{ marginBottom: "30px" }}>
+                {threadFields.map(field => renderFieldIfNonEmpty(field.label, field.value))}
+              </div>
+            )}
+          </>
+        )}
 
         <div style={{ pageBreakBefore: "always" }}></div>
 

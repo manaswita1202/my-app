@@ -33,7 +33,7 @@ const SignupForm = () => {
 
   const validateInvite = async (hash) => {
     try {
-      const response = await fetch(`http://localhost:5000/validate-invite/${hash}`, {
+      const response = await fetch(`https://samplify-backend-production.up.railway.app/validate-invite/${hash}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ const SignupForm = () => {
 
   const registerUser = async (userData) => {
     try {
-      const response = await fetch('http://localhost:5000/register', {
+      const response = await fetch('https://samplify-backend-production.up.railway.app/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

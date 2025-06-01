@@ -45,7 +45,7 @@
   }
   
   .upload-btn {
-    background-color: #007bff;
+    background-color: #c20e35;
     color: white;
     border: none;
     padding: 8px 15px;
@@ -55,6 +55,6 @@
   }
   
   .upload-btn:hover {
-    background-color: #0056b3;
+    background-color: #c20e35;
   }
   
